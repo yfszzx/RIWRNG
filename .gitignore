@@ -2,3 +2,4 @@ RIWRNG/settings.py
 */__pycache__/
 */migrations/*
 uwsgi/
+db.sqlite3
