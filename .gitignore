@@ -1,0 +1,4 @@
+RIWRNG/settings.py
+*/__pycache__/
+*/migrations/*
+uwsgi/
