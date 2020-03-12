@@ -11,7 +11,7 @@ SECRET = settings.WX_SECRET
 def _add_user(req):
     jsn =  json.loads(req.text)
     openid = jsn["openid"]
-    access_token = jsn["access_token"]
+    token = jsn["access_token"]
     req = rq.get(f"https://api.weixin.qq.com/sns/userinfo?access_token={token}&openid={openid}&lang=zh_CN")
 
     info  =  json.loads(req.text)
@@ -30,7 +30,7 @@ def main(request):
     if request.GET['state'] == 'userinfo':
         usr = _add_user(req)
     else:
-        openid = json.loads(r.text)["openid"]
+        openid = json.loads(req.text)["openid"]
         usr_obj = user.objects.filter(openid=openid)
         if usr_obj.count() == 0:
             return redirect(f"https://open.weixin.qq.com/connect/oauth2/authorize?appid={APPID}&redirect_uri=http://psi.longmentcm.com/riwrng&response_type=code&scope=snsapi_userinfo&state=userinfo#wechat_redirect")
