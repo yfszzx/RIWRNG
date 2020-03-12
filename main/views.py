@@ -22,7 +22,7 @@ def _add_user(req):
         nickname=info["nickname"],
         headimgurl=info["headimgurl"]
     )
-    obj.save()
+    obj.save()    
     return obj
 
 def main(request):
@@ -37,6 +37,7 @@ def main(request):
             return redirect(f"https://open.weixin.qq.com/connect/oauth2/authorize?appid={APPID}&redirect_uri=http://psi.longmentcm.com/riwrng&response_type=code&scope=snsapi_userinfo&state=userinfo#wechat_redirect")
         else:
             usr = usr_obj.get(openid=openid)
+    context = {'usr':usr}
     return render(request, 'riwrng.html', context)
 
 def test(request):   
