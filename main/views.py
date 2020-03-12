@@ -36,7 +36,7 @@ def main(request):
             return redirect(f"https://open.weixin.qq.com/connect/oauth2/authorize?appid={APPID}&redirect_uri=http://psi.longmentcm.com/riwrng&response_type=code&scope=snsapi_userinfo&state=userinfo#wechat_redirect")
         else:
             usr = usr_obj.get(openid=openid)
-    return HttpResponse(usr.nickname)
+    return render(request, 'riwrng.html')
 
 def test(request):   
     openid = request.GET['openid']   
