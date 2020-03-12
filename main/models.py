@@ -1,7 +1,7 @@
 from django.db import models
 
 class user(models.Model):
-    openid  = models.CharField(null=True, max_length=100)
+    openid  = models.CharField(unique=True, null=False, max_length=100)
     nickname = models.CharField(null=True, max_length=200)
     sex = models.BooleanField(default=False) 
     headimgurl = models.CharField(null=True, max_length=1000)
