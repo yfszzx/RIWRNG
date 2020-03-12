@@ -1,11 +1,13 @@
 from django.db import models
+import django.utils.timezone as timezone
+
 
 class user(models.Model):
-    openid  = models.CharField(unique=True, null=False, max_length=100)
+    openid  = models.CharField(unique=True,  max_length=100)
     nickname = models.CharField(null=True, max_length=200)
     sex = models.BooleanField(default=False) 
     headimgurl = models.CharField(null=True, max_length=1000)
-    create_timestamp = models.DateTimeField(auto_now_add=True) 
+    create_timestamp = models.DateTimeField(default=timezone.now) 
     grade = models.SmallIntegerField(null=True, default=0)
 
 class score(models.Model):
@@ -25,7 +27,7 @@ class experiment(models.Model):
     exp_score= models.SmallIntegerField(null=True, default=0)
     compare_score = models.SmallIntegerField(null=True, default=0)
     research_score = models.SmallIntegerField(null=True, default=0)
-    create_timestamp = models.DateTimeField(auto_now_add=True) 
+    create_timestamp = models.DateTimeField(default=timezone.now, editable=False) 
 
 
 
