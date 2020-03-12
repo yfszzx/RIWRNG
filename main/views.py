@@ -5,6 +5,7 @@ import json
 from django.shortcuts import redirect
 from django.conf import settings
 from main.models import *
+
 APPID = settings.WX_APPID
 SECRET = settings.WX_SECRET
 
@@ -36,7 +37,7 @@ def main(request):
             return redirect(f"https://open.weixin.qq.com/connect/oauth2/authorize?appid={APPID}&redirect_uri=http://psi.longmentcm.com/riwrng&response_type=code&scope=snsapi_userinfo&state=userinfo#wechat_redirect")
         else:
             usr = usr_obj.get(openid=openid)
-    return render(request, 'riwrng.html')
+    return render(request, 'riwrng.html', context)
 
 def test(request):   
     openid = request.GET['openid']   
@@ -51,6 +52,7 @@ def test(request):
         usr.save()
     else:
         usr = usr_obj.get(openid=openid)
-    return render(request, 'riwrng.html')
+    context = {'usr':usr}
+    return render(request, 'riwrng.html', context)
 
 
