@@ -51,6 +51,6 @@ def test(request):
         usr.save()
     else:
         usr = usr_obj.get(openid=openid)
-    return HttpResponse(usr.nickname)
+    return render(request, 'riwrng.html')
 
 
