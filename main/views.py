@@ -56,4 +56,15 @@ def test(request):
     context = {'usr':usr}
     return render(request, 'riwrng.html', context)
 
+def debug(request):
+    code = request.GET['code']   
+    req = rq.get(f"https://api.weixin.qq.com/sns/oauth2/access_token?appid={APPID}&secret={SECRET}&code={code}&grant_type=authorization_code")
+    jsn =  json.loads(req.text)
+    openid = jsn["openid"]
+    token = jsn["access_token"]
+    req = rq.get(f"https://api.weixin.qq.com/sns/userinfo?access_token={token}&openid={openid}&lang=zh_CN")
+    info  =  json.loads(req.text)
+    return HttpResponse(info.nickname)
+        
+
 
