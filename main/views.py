@@ -5,66 +5,70 @@ import json
 from django.shortcuts import redirect
 from django.conf import settings
 from main.models import *
+import django.contrib.auth as auth
+from django.contrib.auth.decorators import login_required
 
 APPID = settings.WX_APPID
 SECRET = settings.WX_SECRET
 
-def _add_user(req):
-    jsn =  json.loads(req.text)
-    openid = jsn["openid"]
-    token = jsn["access_token"]
-    req = rq.get(f"https://api.weixin.qq.com/sns/userinfo?access_token={token}&openid={openid}&lang=zh_CN")
-
-    info  =  json.loads(req.text)
+def _add_user(info):      
+    usr = User.objects.create_user(username=info["openid"], password='password')
     obj = user(
-        openid=openid,
+        user=usr,
+        openid=info["openid"],
         sex=info["sex"],
         nickname=info["nickname"],
         headimgurl=info["headimgurl"]
     )
     obj.save()    
+    score.objects.create(
+        user=obj
+    )
     return obj
 
-def main(request):
+def _auth_login(openid, request):
+    usr = auth.authenticate(username=openid, password='password')
+    if usr.is_active:
+        auth.login(request, usr)
+    return  user.objects.get(user=usr)
+
+@login_required(login_url='/auth_error')    
+def exp_main(request):
+    return render(request, 'experiment.html')
+
+
+def auth_error(request):
+    return render(request, 'login.html')
+
+def login(request):
     code = request.GET['code']   
     req = rq.get(f"https://api.weixin.qq.com/sns/oauth2/access_token?appid={APPID}&secret={SECRET}&code={code}&grant_type=authorization_code")
+    req = json.loads(req.text)
+    if "errcode" in req.keys():
+        return auth_error(request)
     if request.GET['state'] == 'userinfo':
-        usr = _add_user(req)
-    else:
-        openid = json.loads(req.text)["openid"]
-        usr_obj = user.objects.filter(openid=openid)
-        if usr_obj.count() == 0:
+        openid = req["openid"]
+        token = req["access_token"]
+        req = rq.get(f"https://api.weixin.qq.com/sns/userinfo?access_token={token}&openid={openid}&lang=zh_CN")
+        info  =  json.loads(req.text)
+        usr = _add_user(info)
+    elif user.objects.filter(openid=req["openid"]).count() == 0:
             return redirect(f"https://open.weixin.qq.com/connect/oauth2/authorize?appid={APPID}&redirect_uri=http://psi.longmentcm.com/riwrng&response_type=code&scope=snsapi_userinfo&state=userinfo#wechat_redirect")
-        else:
-            usr = usr_obj.get(openid=openid)
+    usr = _auth_login(openid, request)
     context = {'usr':usr}
-    return render(request, 'riwrng.html', context)
+    return render(request, 'main.html', context)
 
-def test(request):   
+
+def test_login(request):   
     openid = request.GET['openid']   
     usr_obj = user.objects.filter(openid=openid)
     if usr_obj.count() == 0:
-        usr = user(
-            openid=openid,
-            sex=request.GET['sex'],
-            nickname=request.GET['nickname'],
-            headimgurl=request.GET['headimgurl']
-        )
-        usr.save()
-    else:
-        usr = usr_obj.get(openid=openid)
+        info = {"openid":openid, "sex":1, "nickname":"test_user", "headimgurl":"http://thirdwx.qlogo.cn/mmopen/vi_32/icmBarsam1EodnibzlPDoG1d7QcALr7EicYWfGlST4gIYBPqYjH8oxQuLnlRgLaSVRs5YyugWKO6ujJ3haUA3jq8Q/132" }
+        usr = _add_user(info)
+    usr = _auth_login(openid, request)
     context = {'usr':usr}
-    return render(request, 'riwrng.html', context)
+    return render(request, 'main.html', context)
 
-def debug(request):
-    code = request.GET['code']   
-    req = rq.get(f"https://api.weixin.qq.com/sns/oauth2/access_token?appid={APPID}&secret={SECRET}&code={code}&grant_type=authorization_code")
-    jsn =  json.loads(req.text)
-    openid = jsn["openid"]
-    token = jsn["access_token"]
-    req = rq.get(f"https://api.weixin.qq.com/sns/userinfo?access_token={token}&openid={openid}&lang=zh_CN")
-    info  =  json.loads(req.text)
-    return HttpResponse(info.nickname)
-        
+
 
 

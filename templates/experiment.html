@@ -1,0 +1,27 @@
+{%extends "base.html" %}
+ 
+{% block mainbody %}
+   
+<div class="row" align="center">
+   <div>
+    <h4>期待获取一个尽可能大的数，集中意念点击下方按钮</h4>
+  </div>
+  <div>
+  <button type="button" style="width: 200px; font-size:50px" class="btn btn-primary btn-lg " >开&nbsp;始  </button>
+  </div>
+</div>
+
+<script type="text/javascript">
+    
+$(document).ready(function(){
+   $("[data-toggle='popover']").popover(); 
+  $(".explain").click(function(){
+        event.stopPropagation();   
+  });
+  $(".btn").click(function(){
+    alert("btm")
+  });
+});
+</script>
+
+{% endblock %}
