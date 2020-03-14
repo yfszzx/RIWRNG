@@ -3,24 +3,55 @@
 {% block mainbody %}
    
 <div class="row" align="center">
-   <div>
-    <h4>期待获取一个尽可能大的数，集中意念点击下方按钮</h4>
+   <div style="width:200px;height: 300px; color:#1e6099">
+    <div id='rounds' align="left" style="color:#add1f0">第1轮</div><br>
+    <div class='start'>
+      <h4>期盼得到一个很大的数</h4><br>
+      <h3>集中意念点击下方按钮</h3><br>
+      <h4>......</h4>
+    </div>
+    <div class="prepair" hidden=True>
+      <div>345</div>
+    </div>
   </div>
-  <div>
-  <button type="button" style="width: 200px; font-size:50px" class="btn btn-primary btn-lg " >开&nbsp;始  </button>
+  <div style="width:200px;height: 80px" >
+    <div class="prepair" hidden=True>
+      <button   type="button" style="width: 200px; font-size:50px" class="btn btn-primary btn-lg" status='start'>准&nbsp;备 </button>  
+    </div>
+    <div  class='start'>
+      <button type="button" style="width: 200px; font-size:50px" class="btn btn-primary btn-lg" status='start'>开&nbsp;始  </button>   
+    </div>
   </div>
 </div>
 
 <script type="text/javascript">
-    
+round = 1;
+mod = '{{requset.GET.mod}}';
+mod_name = "练习";
+if (mod == 'v')
+    mod_name == "校验";
+if (mod == 'e')
+    mod_name == "测试";
+function renew_round(){
+    $("#rounds").html(mod_name + "第" + round + "轮");
+}
+
 $(document).ready(function(){
-   $("[data-toggle='popover']").popover(); 
-  $(".explain").click(function(){
-        event.stopPropagation();   
-  });
-  $(".btn").click(function(){
-    alert("btm")
-  });
+    renew_round()
+    $(".start").find(".btn").click(function(){
+        $(this).attr("disabled",true)
+        $.get('/test/debug?mod=' + mod,function(data,status){
+            round += 1;
+            $(".start").hide()
+            $(".prepair").show()     
+            $(".start").find(".btn").attr("disabled",false);
+        });
+
+    });
+    $(".prepair").find(".btn").click(function(){
+        $(".start").show()
+        $(".prepair").hide()
+    });
 });
 </script>
 

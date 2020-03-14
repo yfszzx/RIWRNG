@@ -1,13 +1,17 @@
-import rdrand as rd
+from django.http import HttpResponse
+import json
+#import rdrand as rd
+import time
 RAND_NUMBER_NUM = 4000
 def _get_rand_num():
+    start = time.time()
     rnd = 0
     rnd_rsc = []
     for i in range(RAND_NUMBER_NUM):
         num = rd.rdrand_get_bits(2) 
         rnd += num % 2
         rnd_rsc += int((num - rnd) / 2)
-    return rnd, rnd_rsc
+    return rnd, rnd_rsc, time.time() - start
 
 def _core(usr, mod):
     rnd, rnd_rsc = _get_rand_num()
@@ -30,3 +34,6 @@ def _core(usr, mod):
         scr.verify_num += RAND_NUMBER_NUM
     scr.save()
     return rnd
+def get(requet):
+    num, _, seconds =  _get_rand_num()
+    return HttpResponse(json.dumps({"rnd":num, "time":seconds, "num":RAND_NUMBER_NUM}))

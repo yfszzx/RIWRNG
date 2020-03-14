@@ -17,7 +17,7 @@ def _add_user(info):
         user=usr,
         openid=info["openid"],
         sex=info["sex"],
-        nickname=info["nickname"],
+        nickname=info["nickname"].encode('iso-8859-1').decode('utf-8'),
         headimgurl=info["headimgurl"]
     )
     obj.save()    
@@ -69,6 +69,8 @@ def test_login(request):
     context = {'usr':usr}
     return render(request, 'main.html', context)
 
-
+@login_required(login_url='/auth_error')  
+def debug(request):
+    return render(request, 'test.html')
 
 
