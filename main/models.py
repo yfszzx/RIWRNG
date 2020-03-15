@@ -9,6 +9,7 @@ class user(models.Model):
     sex = models.BooleanField(default=False) 
     headimgurl = models.CharField(null=True, max_length=1000)
     grade = models.SmallIntegerField(null=True, default=0)
+    group_num = models.IntegerField(null=True, default=0)
 
 class score(models.Model):
     user = models.OneToOneField(user, primary_key=True, on_delete=models.CASCADE)
@@ -28,7 +29,9 @@ class experiment(models.Model):
     exp_score = models.SmallIntegerField(null=True, default=0)
     compare_score = models.SmallIntegerField(null=True, default=0)
     research_score = models.SmallIntegerField(null=True, default=0)
-    create_timestamp = models.DateTimeField(auto_now_add=True) 
+    create_timestamp = models.DateTimeField(auto_now_add=True)
+    group = models.IntegerField(null=True, default=0) 
+
 
 
 

@@ -21,7 +21,8 @@ urlpatterns = [
     path('login/', views.login),
     path('auth_error', views.auth_error),
     path('riwrng', views.exp_main),
-    path('riwrng/getNum', kernel.get),
+    path('riwrng/getNum', kernel.get_result),
+    path('riwrng/compare', kernel.set_compare),
     path('test/login', views.test_login),
     path('test/debug', views.debug),
 ]

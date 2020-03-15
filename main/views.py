@@ -7,6 +7,7 @@ from django.conf import settings
 from main.models import *
 import django.contrib.auth as auth
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 APPID = settings.WX_APPID
 SECRET = settings.WX_SECRET
@@ -69,8 +70,9 @@ def test_login(request):
     context = {'usr':usr}
     return render(request, 'main.html', context)
 
-@login_required(login_url='/auth_error')  
+
 def debug(request):
-    return render(request, 'test.html')
+    ret = rq.get("http://psi.longmentcm.com/riwrng/getNum")
+    return JsonResponse(json.loads(ret.text))
 
 
