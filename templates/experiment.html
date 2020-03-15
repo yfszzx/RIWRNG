@@ -35,6 +35,7 @@
 </div>
 
 <script type="text/javascript">
+expid = '';
 groupid = 0;
 round = 1;
 total = 0;
@@ -90,7 +91,7 @@ $(document).ready(function(){
     renew_round()
     $(".start").find(".btn").click(function(){
         $(this).attr("disabled",true)
-        $.getJSON('/riwrng/get_result', {mod:mod, groupid:groupid, function(data){
+        $.getJSON('/riwrng/get_result', {mod:mod, groupid:groupid}, function(data){
             grouid = data.groupid
             expid = data.expid
             round += 1;
@@ -103,11 +104,13 @@ $(document).ready(function(){
 
     });
     $(".prepair").find(".btn").click(function(){
-        $.getJSON('/test/debug?mod=' + mod, function(data){
-            renew_round()
-            $(".start").show()
-            $(".prepair").hide()
-          })
+        if (expid != ''){
+          $.getJSON('/riwrng/get_compare', {expid:expid}, function(data){
+              renew_round()
+              $(".start").show("slow")
+              $(".prepair").hide("slow")
+            });
+        }
     });
 });
 </script>

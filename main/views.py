@@ -33,7 +33,7 @@ def _auth_login(openid, request):
         auth.login(request, usr)
     return  user.objects.get(user=usr)
 
-@login_required(login_url='/auth_error')    
+#@login_required(login_url='/auth_error')    
 def exp_main(request):
     return render(request, 'experiment.html')
 
@@ -55,7 +55,7 @@ def login(request):
         usr = _add_user(info)
     elif user.objects.filter(openid=req["openid"]).count() == 0:
             return redirect(f"https://open.weixin.qq.com/connect/oauth2/authorize?appid={APPID}&redirect_uri=http://psi.longmentcm.com/riwrng&response_type=code&scope=snsapi_userinfo&state=userinfo#wechat_redirect")
-    usr = _auth_login(openid, request)
+    usr = _auth_login(req["openid"], request)
     context = {'usr':usr}
     return render(request, 'main.html', context)
 
