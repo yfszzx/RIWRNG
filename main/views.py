@@ -57,7 +57,7 @@ def login(request):
         info  =  json.loads(req.text)
         usr = _add_user(info)
     elif user.objects.filter(openid=req["openid"]).count() == 0:
-            return redirect(f"https://open.weixin.qq.com/connect/oauth2/authorize?appid={APPID}&redirect_uri=http://psi.longmentcm.com/riwrng&response_type=code&scope=snsapi_userinfo&state=userinfo#wechat_redirect")
+            return redirect(f"https://open.weixin.qq.com/connect/oauth2/authorize?appid={APPID}&redirect_uri=http://psi.longmentcm.com/login&response_type=code&scope=snsapi_userinfo&state=userinfo#wechat_redirect")
     _auth_login(req["openid"], request)
     return redirect(f"/riwrng/main")
 
