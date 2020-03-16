@@ -23,6 +23,8 @@ urlpatterns = [
     path('riwrng', views.exp_main),
     path('riwrng/get_result', kernel.get_result),
     path('riwrng/get_compare', kernel.set_compare),
+    path('riwrng/main', views.main),
+    path('riwrng/get_compare', kernel.set_compare),
     path('test/login', views.test_login),
     path('test/debug', views.debug),
 ]

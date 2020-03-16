@@ -3,100 +3,80 @@
 {% block mainbody %}
    
 <div class="row" align="center">
-   <div style="width:300px;height: 300px; color:#1e6099">
+   <div style="width:300px;height: 250px; color:#1e6099">
     <div id='rounds' align="left" style="color:#add1f0">第1轮</div><br>
     <div class='start'>
       <h3>期盼得到一个<b>很大</b>的数</h3><br>
-      <h4>大于5000的数字</h4><br>
-      <h4><b>集中意念</b>点击下方按钮</h4><br>
-      <h4>......</h4>
+      <h4>接近10000的数字</h4><br>
+      <h4><b>集中意念</b>点击下方按钮</h4>
     </div>
     <div class="prepair" hidden=True>
       <div id="num" style="font-size:50px;"></div>
       <h4 id="encourage"></h4>
     </div>
-    <div>
-        <span>累计偏差:</span><span id="dev">0</span>&nbsp;&nbsp;
-        <span data-container="body" data-toggle="popover" data-placement="top" 
-            data-content="累计。" >得分: <span id="score">0</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-question-sign"></span></span>
-    </div>
-    <h5>生成随机数用时:&nbsp;<span id="time"></span>&nbsp;毫秒</h5>
+   
 
 
   </div>
-  <div style="width:200px;height: 80px" >
+   <div>
+        <span>累计偏差:</span><span id="dev">0</span>&nbsp;&nbsp;
+        <span data-container="body" data-toggle="popover" data-placement="top" 
+            data-title="得分 = 累计偏差 / 标准差"
+            data-content="标准差 = 0.5 * (实验轮次 * 10000) ^ 0.5" >得分: <span id="score">0</span>&nbsp;&nbsp;<span style="color:#AAA" class="glyphicon glyphicon-question-sign"></span></span>
+    </div>
+   
+  <div style="width:200px;height: 80px;margin:25px" >
     <div class="prepair" hidden=True>
-      <button   type="button" style="width: 200px; font-size:50px" class="btn btn-primary btn-lg" status='start'>准&nbsp;备 </button>  
+      <button   type="button" style="width: 200px; font-size:50px" class="btn btn-success btn-lg" status='start'>准&nbsp;备 </button>  
     </div>
     <div  class='start'>
       <button type="button" style="width: 200px; font-size:50px" class="btn btn-primary btn-lg" status='start'>开&nbsp;始  </button>   
     </div>
   </div>
+  <h6>生成随机数用时:&nbsp;<span id="time">-</span>&nbsp;毫秒</h6>
+  <a style="font-size:20px" href="/riwrng/main">返回</a>
 </div>
 
 <script type="text/javascript">
-expid = '';
 groupid = 0;
-round = 1;
-total = 0;
-sum = 0;
-mod = '{{requset.GET.mod}}';
-switch(mod) {
-     case 'e':
-        mod_name = "测试";
-        break;
-     case 'v':
-        mod_name == "校验";
-        break
-     default:
-        mod_name = "练习";
-} 
-
-
-
-function renew_round(){
-    $("#rounds").html(mod_name + "第" + round + "轮");
+mod = '{{requset.GET.mod}}' == 'e' ? 0:1;
+function renew_round(round){
+    mod_name = mod ? "测试":"练习";
+    $("#rounds").html( mod_name + "第" + round + "轮");
 }
 
 function show_result(data){
-  total += data.num;
-  dev = data.rnd - data.num/2;
-  sum += dev;
-  
+  groupid = data.groupid;
+  dev = data.rnd - 5000;
   if (dev <= 0){
       encourage = "继续努力！加油！"
     }
   if (dev > 0){
       encourage = "好！"
     }
-  if (dev > 10){
+  if (dev > 20){
       encourage = "很好！"
     }
-  if (dev > 20){
+  if (dev > 50){
       encourage = "非常好！"
     }
-  if (dev > 50){
+  if (dev > 100){
       encourage = "完美！"
     }
   $("#num").html(data.rnd);
-  $("#dev").html(sum);
-  $("#score").html(parseInt(sum * 1000 / Math.sqrt(total))/1000);
+  $("#dev").html(data.dev);
+  $("#score").html(data.value);
   $("#encourage").html(encourage);
-  $("#time").html(parseInt(data.time * 100000)/100)
-
+  $("#time").html(data.time)
 }
 
 $(document).ready(function(){
     $("[data-toggle='popover']").popover(); 
-    renew_round()
+    renew_round(1)
     $(".start").find(".btn").click(function(){
         $(this).attr("disabled",true)
         $.getJSON('/riwrng/get_result', {mod:mod, groupid:groupid}, function(data){
-            grouid = data.groupid
-            expid = data.expid
-            round += 1;
-            show_result(data)
-            
+            show_result(data)            
             $(".start").hide()
             $(".prepair").show()     
             $(".start").find(".btn").attr("disabled",false);
@@ -104,13 +84,11 @@ $(document).ready(function(){
 
     });
     $(".prepair").find(".btn").click(function(){
-        if (expid != ''){
-          $.getJSON('/riwrng/get_compare', {expid:expid}, function(data){
-              renew_round()
+          $.getJSON('/riwrng/get_compare', {groupid:groupid}, function(data){
+              renew_round(data.round + 1)
               $(".start").show("slow")
               $(".prepair").hide("slow")
             });
-        }
     });
 });
 </script>

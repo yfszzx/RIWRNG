@@ -30,11 +30,14 @@ def _add_user(info):
 def _auth_login(openid, request):
     usr = auth.authenticate(username=openid, password='password')
     if usr.is_active:
-        auth.login(request, usr)
-    return  user.objects.get(user=usr)
+        auth.login(request, usr)   
 
-#@login_required(login_url='/auth_error')    
+@login_required(login_url='/auth_error')    
 def exp_main(request):
+    if request.GET["mod"] == 'e':
+        usr = user.objects.get(user=request.user)
+        if usr.grade == 0:
+            return render(request, 'forbid.html')
     return render(request, 'experiment.html')
 
 
@@ -55,9 +58,12 @@ def login(request):
         usr = _add_user(info)
     elif user.objects.filter(openid=req["openid"]).count() == 0:
             return redirect(f"https://open.weixin.qq.com/connect/oauth2/authorize?appid={APPID}&redirect_uri=http://psi.longmentcm.com/riwrng&response_type=code&scope=snsapi_userinfo&state=userinfo#wechat_redirect")
-    usr = _auth_login(req["openid"], request)
-    context = {'usr':usr}
-    return render(request, 'main.html', context)
+    _auth_login(req["openid"], request)
+    return redirect(f"/riwrng/main")
+
+@login_required(login_url='/auth_error') 
+def main(request):
+    return render(request, 'main.html', {"usr": user.objects.get(user=request.user)})
 
 
 def test_login(request):   
@@ -67,8 +73,7 @@ def test_login(request):
         info = {"openid":openid, "sex":1, "nickname":"test_user", "headimgurl":"http://thirdwx.qlogo.cn/mmopen/vi_32/icmBarsam1EodnibzlPDoG1d7QcALr7EicYWfGlST4gIYBPqYjH8oxQuLnlRgLaSVRs5YyugWKO6ujJ3haUA3jq8Q/132" }
         usr = _add_user(info)
     usr = _auth_login(openid, request)
-    context = {'usr':usr}
-    return render(request, 'main.html', context)
+    return redirect(f"/riwrng/main")
 
 
 def debug(request):
