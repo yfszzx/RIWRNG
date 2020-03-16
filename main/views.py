@@ -48,6 +48,7 @@ def login(request):
     code = request.GET['code']   
     req = rq.get(f"https://api.weixin.qq.com/sns/oauth2/access_token?appid={APPID}&secret={SECRET}&code={code}&grant_type=authorization_code")
     req = json.loads(req.text)
+    info = req
     if "errcode" in req.keys():
         return auth_error(request)
     if request.GET['state'] == 'userinfo':
@@ -58,7 +59,7 @@ def login(request):
         usr = _add_user(info)
     elif user.objects.filter(openid=req["openid"]).count() == 0:
             return redirect(f"https://open.weixin.qq.com/connect/oauth2/authorize?appid={APPID}&redirect_uri=http://psi.longmentcm.com/login&response_type=code&scope=snsapi_userinfo&state=userinfo#wechat_redirect")
-    _auth_login(req["openid"], request)
+    _auth_login(info["openid"], request)
     return redirect(f"/riwrng/main")
 
 @login_required(login_url='/auth_error') 
