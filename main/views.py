@@ -135,4 +135,4 @@ def detail(request):
     return render(request, 'detail.html', context)
 
 def about(request):
-    return render(request, 'about.html', context)
+    return render(request, 'about.html')
