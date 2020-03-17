@@ -1,0 +1,45 @@
+{%extends "base.html" %}
+ 
+{% block mainbody %}
+   
+<div class="row">
+    <table border="1">
+    <tr>
+    <th>开始时间</th>
+    <th>实验次数</th>
+    <th>累计偏差</th>
+    <th>得分</th>
+    </tr>
+    {% for src in list %}
+    <tr>
+    <td>{{src.create_timestamp}}</td><td>{{src.rounds}}</td>  <td>{{src.dev}}</td> <td>{{src.value}}</td>
+    </tr>
+    {% endfor %}
+    
+</div>
+<div class="row">
+<div class="pagination">
+    <span class="step-links">
+        {% if contacts.has_previous %}
+            <a href="?page={{ contacts.previous_page_number }}">previous</a>
+        {% endif %}
+        {{ contacts.num_pages }}
+        {% for num in contacts.paginator.page_range %}
+        <a href="?page={{ num }}">{{ num }}</a>
+      {% endfor %}
+
+        <span class="current">
+            Page {{ contacts.number }} of {{ contacts.paginator.num_pages }}.
+        </span>
+        
+
+        {% if contacts.has_next %}
+            <a href="?page={{ contacts.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+</div>
+
+
+
+{% endblock %}

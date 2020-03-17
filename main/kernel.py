@@ -49,9 +49,11 @@ def get_result(request):
     if mod:
         scr.train_score = scr.train_score + rnd
         scr.train_num += RAND_NUMBER_NUM
+        scr.train_rounds += 1
     else:
         scr.exp_score += rnd
         scr.exp_num += RAND_NUMBER_NUM
+        scr.exp_rounds += 1
    
     scr.save()
     grp.rounds += 1

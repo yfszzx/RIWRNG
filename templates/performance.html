@@ -1,0 +1,57 @@
+{%extends "base.html" %}
+ 
+{% block mainbody %}
+<!-- <div class="row" align="center">
+<div class="card">
+    <div class="card-header">训练成绩</div>
+    <div class="card-body">
+        <div><b>实验次数</b>:{{trn_rounds}}</b></div>
+        <div><b>累计偏差</b>:{{trn_dev}}</b></div>
+        <div><b>标准差</b>:{{trn_std}}</b></div>
+        <div><b>评分</b>:{{trn_score}}</b></div>        
+    </div> 
+     <div class="card-footer">底部</div>
+</div>
+
+<div class="card bg-primary text-white">
+    <div class="card-header">测试成绩</div>
+    <div class="card-body">
+        <div><b>实验次数</b>:{{exp_rounds}}</b></div>
+        <div><b>累计偏差</b>:{{exp_dev}}</b></div>
+        <div><b>标准差</b>:{{exp_std}}</b></div>
+        <div><b>评分</b>:{{exp_score}}</b></div>     
+    </div> 
+</div>
+</div>
+ -->
+ <div class="panel panel-primary  text-white">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            训练成绩
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div><b>实验次数</b>:{{trn_rounds}}</b></div>
+        <div><b>累计偏差</b>:{{trn_dev}}</b></div>
+        <div><b>标准差</b>:{{trn_std}}</b></div>
+        <div><b>评分</b>:{{trn_score}}</b></div>   
+        <a href="/riwrng/detail?mod=t">查看详情</a>
+    </div>
+</div>
+<div class="panel panel-primary  text-white">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            测试成绩
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div><b>实验次数</b>:{{exp_rounds}}</b></div>
+        <div><b>累计偏差</b>:{{exp_dev}}</b></div>
+        <div><b>标准差</b>:{{exp_std}}</b></div>
+        <div><b>评分</b>:{{exp_score}}</b></div>   
+        <a href="/riwrng/detail?mod=e">查看详情</a>  
+    </div>
+</div>
+
+
+{% endblock %}

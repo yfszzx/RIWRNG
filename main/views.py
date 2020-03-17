@@ -8,6 +8,7 @@ from main.models import *
 import django.contrib.auth as auth
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 APPID = settings.WX_APPID
 SECRET = settings.WX_SECRET
@@ -81,4 +82,43 @@ def debug(request):
     ret = rq.get("http://psi.longmentcm.com/riwrng/getNum")
     return JsonResponse(json.loads(ret.text))
 
+@login_required(login_url='/auth_error') 
+def performance(request):
+    def scr(score, num):
+        if num == 0:
+            return 0
+        return round((score - num/2) * 2/ (num ** 0.5), 2)
+    def std(num):
+        return round(num ** 0.5 / 2 ,2)
+    usr = user.objects.get(user=request.user)
+    scores = score.objects.get(user=usr)
+    context = {
+        "trn_dev": scores.train_score - scores.train_num/2,
+        "trn_std": std(scores.train_num),
+        "trn_rounds": scores.train_rounds,
+        "trn_score":  scr(scores.train_score, scores.train_num),
+        "exp_dev": scores.exp_score - scores.exp_num/2,
+        "exp_std": std(scores.exp_num),
+        "exp_rounds": scores.exp_rounds,
+        "exp_score": scr(scores.exp_score, scores.exp_num)
+        }
+    return render(request, "performance.html", context)
 
+@login_required(login_url='/auth_error') 
+def detail(request):
+    usr = user.objects.get(user=request.user)
+    grp = group.objects.filter(user=usr, mod=request.GET["mod"]=='t')
+    paginator = Paginator(grp, 10)
+    page = request.GET.get('page')
+    try:
+        contacts = paginator.page(page) # contactsÎªPage¶ÔÏó£¡
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        contacts = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        contacts = paginator.page(paginator.num_pages)
+    for s in grp:
+        s.value = round(s.value, 2)
+    context ={"list":grp, "contacts":contacts}
+    return render(request, 'detail.html', context)

@@ -14,8 +14,10 @@ class score(models.Model):
     user = models.OneToOneField(user, primary_key=True, on_delete=models.CASCADE)
     train_num = models.BigIntegerField(null=True, default=0)
     train_score = models.BigIntegerField(null=True, default=0)
+    train_rounds = models.IntegerField(null=True, default=0)
     exp_num = models.BigIntegerField(null=True, default=0)
     exp_score = models.BigIntegerField(null=True, default=0)
+    exp_rounds = models.IntegerField(null=True, default=0)
     latest_exp_time =  models.DateTimeField(null=True, default=timezone.now) 
 
 class group(models.Model):
