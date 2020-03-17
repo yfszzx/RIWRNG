@@ -10,13 +10,20 @@ class user(models.Model):
     headimgurl = models.CharField(null=True, max_length=1000)
     grade = models.SmallIntegerField(null=True, default=0)
 
+class total_result(models.Model):
+    type = models.CharField(primary_key=True, max_length=100)
+    members = models.IntegerField(null=True, default=0)
+    rounds = models.IntegerField(null=True, default=0)
+    dev = models.BigIntegerField(null=True, default=0)
+    num = models.BigIntegerField(null=True, default=0)
+
 class score(models.Model):
     user = models.OneToOneField(user, primary_key=True, on_delete=models.CASCADE)
     train_num = models.BigIntegerField(null=True, default=0)
-    train_score = models.BigIntegerField(null=True, default=0)
+    train_dev = models.BigIntegerField(null=True, default=0)
     train_rounds = models.IntegerField(null=True, default=0)
     exp_num = models.BigIntegerField(null=True, default=0)
-    exp_score = models.BigIntegerField(null=True, default=0)
+    exp_dev = models.BigIntegerField(null=True, default=0)
     exp_rounds = models.IntegerField(null=True, default=0)
     latest_exp_time =  models.DateTimeField(null=True, default=timezone.now) 
 

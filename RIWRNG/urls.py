@@ -26,6 +26,7 @@ urlpatterns = [
     path('riwrng/get_compare', kernel.set_compare),
     path('riwrng/performance', views.performance),
     path('riwrng/detail', views.detail),
+    path('riwrng/about', views.about),
     path('test/login', views.test_login),
     path('test/debug', views.debug),
 ]

@@ -87,21 +87,34 @@ def performance(request):
     def scr(score, num):
         if num == 0:
             return 0
-        return round((score - num/2) * 2/ (num ** 0.5), 2)
+        return round(score * 2/ ((num  * 1000) ** 0.5), 2)
     def std(num):
-        return round(num ** 0.5 / 2 ,2)
+        return round((num * 1000) ** 0.5 / 2 ,2)
+    def total_data(context, head):
+        data = total_result.objects.get(type=head)
+        context[f"{head}_ttl_rnd"] = data.rounds
+        context[f"{head}_ttl_mem"] = data.members
+        context[f"{head}_ttl_dev"] = data.dev
+        context[f"{head}_ttl_std"]  = std(data.num)
+        context[f"{head}_ttl_score"] = scr(data.dev, data.num)
+        return context
+
+
     usr = user.objects.get(user=request.user)
     scores = score.objects.get(user=usr)
     context = {
-        "trn_dev": scores.train_score - scores.train_num/2,
+        "trn_dev": scores.train_dev,
         "trn_std": std(scores.train_num),
         "trn_rounds": scores.train_rounds,
-        "trn_score":  scr(scores.train_score, scores.train_num),
-        "exp_dev": scores.exp_score - scores.exp_num/2,
+        "trn_score":  scr(scores.train_dev, scores.train_num),
+        "exp_dev": scores.exp_dev,
         "exp_std": std(scores.exp_num),
         "exp_rounds": scores.exp_rounds,
-        "exp_score": scr(scores.exp_score, scores.exp_num)
+        "exp_score": scr(scores.exp_dev, scores.exp_num) 
         }
+    context = total_data(context, "train")
+    context = total_data(context, "exp")
+    context = total_data(context, "total")
     return render(request, "performance.html", context)
 
 @login_required(login_url='/auth_error') 
@@ -120,3 +133,6 @@ def detail(request):
         s.value = round(s.value, 2)
     context ={"list":grp, "contacts":contacts}
     return render(request, 'detail.html', context)
+
+def about(request):
+    return render(request, 'about.html', context)

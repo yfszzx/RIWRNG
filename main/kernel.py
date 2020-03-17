@@ -25,6 +25,13 @@ def _get_rand_num():
 #要求参数：groupid, mod
 @login_required(login_url='/auth_error')   
 def get_result(request): 
+    def total_save(head, member, rnd):
+        tr = total_result.objects.get(type=head)
+        tr.rounds += 1
+        tr.dev += rnd - RAND_NUMBER_NUM / 2
+        tr.num += RAND_NUMBER_NUM /1000
+        tr.members += member
+        tr.save()   
     groupid = int(request.GET["groupid"])
     mod = int(request.GET["mod"])
     if groupid == 0:
@@ -47,18 +54,25 @@ def get_result(request):
         )
     scr = score.objects.get(user=grp.user)
     if mod:
-        scr.train_score = scr.train_score + rnd
-        scr.train_num += RAND_NUMBER_NUM
+        tp = "train"
+        member = 1 if scr.train_rounds == 0 else 0
+        scr.train_dev  += rnd - RAND_NUMBER_NUM / 2
+        scr.train_num += RAND_NUMBER_NUM / 1000
         scr.train_rounds += 1
     else:
-        scr.exp_score += rnd
-        scr.exp_num += RAND_NUMBER_NUM
+        member = 1 if scr.exp_rounds == 0 else 0
+        scr.exp_dev += rnd  - RAND_NUMBER_NUM / 2
+        scr.exp_num += RAND_NUMBER_NUM / 1000
         scr.exp_rounds += 1
-   
+        tp = "exp"
     scr.save()
+    total_save(tp, member, rnd)
+    total_save("total", 1 if member == 1 and tp == "train" else 0, rnd)
+    
+    
     grp.rounds += 1
     grp.curr_exp = exp.id
-    grp.dev +=  rnd -  int(RAND_NUMBER_NUM / 2)
+    grp.dev +=  rnd -  RAND_NUMBER_NUM / 2
     grp.value = grp.dev * 2 / ((RAND_NUMBER_NUM * grp.rounds) ** 0.5)
     grp.compared = False
     grp.save()
