@@ -1,33 +1,10 @@
 {%extends "base.html" %}
  
 {% block mainbody %}
-<!-- <div class="row" align="center">
-<div class="card">
-    <div class="card-header">训练成绩</div>
-    <div class="card-body">
-        <div><b>实验次数</b>:{{trn_rounds}}</b></div>
-        <div><b>累计偏差</b>:{{trn_dev}}</b></div>
-        <div><b>标准差</b>:{{trn_std}}</b></div>
-        <div><b>评分</b>:{{trn_score}}</b></div>        
-    </div> 
-     <div class="card-footer">底部</div>
-</div>
-
-<div class="card bg-primary text-white">
-    <div class="card-header">测试成绩</div>
-    <div class="card-body">
-        <div><b>实验次数</b>:{{exp_rounds}}</b></div>
-        <div><b>累计偏差</b>:{{exp_dev}}</b></div>
-        <div><b>标准差</b>:{{exp_std}}</b></div>
-        <div><b>评分</b>:{{exp_score}}</b></div>     
-    </div> 
-</div>
-</div>
- -->
- <div class="panel panel-primary  text-white">
+<div class="panel panel-primary  text-white">
     <div class="panel-heading">
         <h3 class="panel-title">
-            训练成绩
+            练习成绩
         </h3>
     </div>
     <div class="panel-body">
@@ -41,7 +18,7 @@
 <div class="panel panel-primary  text-white">
     <div class="panel-heading">
         <h3 class="panel-title">
-            测试成绩
+            试验成绩
         </h3>
     </div>
     <div class="panel-body">
@@ -52,11 +29,11 @@
         <a href="/riwrng/detail?mod=e">查看详情</a>  
     </div>
 </div>
-
+ {% for src in total_content%}
 <div class="panel panel-success  text-white">
     <div class="panel-heading">
         <h3 class="panel-title">
-            项目整体成绩
+            项目{{src.name}}成绩
         </h3>
     </div>
     <div class="panel-body">
@@ -64,36 +41,11 @@
         <div><b>实验次数</b>:{{total_ttl_rnd}}</b></div>
         <div><b>累计偏差</b>:{{total_ttl_dev}}</b></div>
         <div><b>标准差</b>:{{total_ttl_std}}</b></div>
-        <div><b>评分</b>:{{total_ttl_score}}</b></div>   
+        <div><b>评分</b>:{{total_ttl_score}}</b></div> 
+        <div><b>参照组1评分</b>:{{total_rsc_ttl_score}}</b></div>  
+        <div><b>参照组2评分</b>:{{total_cmp_ttl_score}}</b></div>  
     </div>
 </div>
+ {% endfor %}
 
-<div class="panel panel-success  text-white">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            项目训练成绩
-        </h3>
-    </div>
-    <div class="panel-body">
-        <div><b>参与人数</b>:{{train_ttl_mem}}</b></div>
-        <div><b>实验次数</b>:{{train_ttl_rnd}}</b></div>
-        <div><b>累计偏差</b>:{{train_ttl_dev}}</b></div>
-        <div><b>标准差</b>:{{train_ttl_std}}</b></div>
-        <div><b>评分</b>:{{train_ttl_score}}</b></div>   
-    </div>
-</div>
-<div class="panel panel-success  text-white">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            项目测试成绩
-        </h3>
-    </div>
-    <div class="panel-body">
-        <div><b>参与人数</b>:{{exp_ttl_mem}}</b></div>
-        <div><b>实验次数</b>:{{exp_ttl_rnd}}</b></div>
-        <div><b>累计偏差</b>:{{exp_ttl_dev}}</b></div>
-        <div><b>标准差</b>:{{exp_ttl_std}}</b></div>
-        <div><b>评分</b>:{{exp_ttl_score}}</b></div>   
-    </div>
-</div>
 {% endblock %}

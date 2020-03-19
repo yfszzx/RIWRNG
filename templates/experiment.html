@@ -3,11 +3,19 @@
 {% block mainbody %}
    
 <div class="row" align="center">
+  <div style="font-size:18px; color:#1e6099">意念方向:<label class="radio-inline">
+        <input type="radio" name="dirct_radio" value=1> 很大
+    </label>
+    <label class="radio-inline">
+        <input type="radio" name="dirct_radio"  value=0> 很小
+    </label>
+  </div>
+  <hr>
    <div style="width:300px;height: 250px; color:#1e6099">
-    <div id='rounds' align="left" style="color:#add1f0">第1轮</div><br>
+    <div id='rounds' align="left" style="color:#add1f0">第1轮</div><hr>
     <div class='start'>
-      <h3>期盼得到一个<b>很大</b>的数</h3><br>
-      <h4>接近10000的数字</h4><br>
+      <h3>期盼得到一个<b><span id="direct"></span></b>的数</h3><br>
+      <h4>接近&nbsp;<span id="direct_num"></span>&nbsp;的数字</h4><br>
       <h4><b>集中意念</b>点击下方按钮</h4>
     </div>
     <div class="prepair" hidden=True>
@@ -33,21 +41,40 @@
       <button type="button" style="width: 200px; font-size:50px" class="btn btn-primary btn-lg" status='start'>开&nbsp;始  </button>   
     </div>
   </div>
-  <h6>生成随机数用时:&nbsp;<span id="time">-</span>&nbsp;毫秒</h6>
+  <h6>生成随机数用时:&nbsp;<span id="time">-</span>&nbsp;毫秒 &nbsp;&nbsp;响应时间&nbsp;<span id="all_time">-</span>&nbsp;毫秒</h6>
   <a style="font-size:20px" href="/riwrng/main">返回</a>
 </div>
 
 <script type="text/javascript">
-groupid = 0;
-mod = '{{requset.GET.mod}}' == 'e' ? 0:1;
+var groupid = 0;
+var mod = '{{request.GET.mod}}' == 'e' ? 0:1;
+var direction = '{{request.user.direction}}' == 'True' ? 1:0 ;
+var start_time = null
 function renew_round(round){
     mod_name = mod ? "测试":"练习";
     $("#rounds").html( mod_name + "第" + round + "轮");
 }
+function set_direct(new_direct){
+  direction = new_direct;
+  if (direction == 0){
+    $("#direct").html("很小");
+    $("#direct_num").html(0);
+    $("input[name='dirct_radio'][value=0]").attr("checked", true)
+    //$("input[name='dirct_radio'][value=1]").attr("checked", false)
+  }  else {
+    $("#direct").html("很大");
+    $("#direct_num").html(10000);
+    $("input[name='dirct_radio'][value=1]").attr("checked", true)
+    //$("input[name='dirct_radio'][value=0]").attr("checked", false)
+  }
+}
+
+
 
 function show_result(data){
   groupid = data.groupid;
-  dev = data.rnd - 5000;
+  direct = direction? 1: -1;
+  dev = (data.rnd - 5000) * direct ;
   if (dev <= 0){
       encourage = "继续努力！加油！"
     }
@@ -67,19 +94,26 @@ function show_result(data){
   $("#dev").html(data.dev);
   $("#score").html(data.value);
   $("#encourage").html(encourage);
-  $("#time").html(data.time)
+  $("#time").html(data.time);
+  $("#all_time").html(new Date().getTime() - start_time);
 }
 
 $(document).ready(function(){
+   
     $("[data-toggle='popover']").popover(); 
     renew_round(1)
+    set_direct(direction)
+    $("input[name='dirct_radio']").change(function(){
+      set_direct(direction?0:1)
+    })
     $(".start").find(".btn").click(function(){
         $(this).attr("disabled",true)
-        $.getJSON('/riwrng/get_result', {mod:mod, groupid:groupid}, function(data){
+        start_time = new Date().getTime();
+        $.getJSON('/riwrng/get_result', {mod:mod, groupid:groupid, direction:direction}, function(data){
             show_result(data)            
             $(".start").hide()
             $(".prepair").show()     
-            $(".start").find(".btn").attr("disabled",false);
+            
         });
 
     });
@@ -88,6 +122,7 @@ $(document).ready(function(){
               renew_round(data.round + 1)
               $(".start").show("slow")
               $(".prepair").hide("slow")
+              $(".start").find(".btn").attr("disabled",false);
             });
     });
 });

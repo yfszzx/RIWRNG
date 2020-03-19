@@ -5,7 +5,7 @@ import json
 from django.shortcuts import redirect
 from django.conf import settings
 from main.models import *
-import django.contrib.auth as auth
+from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -14,10 +14,10 @@ APPID = settings.WX_APPID
 SECRET = settings.WX_SECRET
 
 def _add_user(info):      
-    usr = User.objects.create_user(username=info["openid"], password='password')
-    obj = user(
-        user=usr,
-        openid=info["openid"],
+    #usr = ser.objects.create_user(username=info["openid"], password='password')
+    obj = userInfo.objects.create_user(
+        username=info["openid"], 
+        password='password',
         sex=info["sex"],
         nickname=info["nickname"].encode('iso-8859-1').decode('utf-8'),
         headimgurl=info["headimgurl"]
@@ -65,12 +65,14 @@ def login(request):
 
 @login_required(login_url='/auth_error') 
 def main(request):
-    return render(request, 'main.html', {"usr": user.objects.get(user=request.user)})
+    return render(request, 'main.html')
 
 
 def test_login(request):   
+    if not settings.LOCAL_DEBUD:
+        return  render(request, 'login.html')
     openid = request.GET['openid']   
-    usr_obj = user.objects.filter(openid=openid)
+    usr_obj = userInfo.objects.filter(username=openid)
     if usr_obj.count() == 0:
         info = {"openid":openid, "sex":1, "nickname":"test_user", "headimgurl":"http://thirdwx.qlogo.cn/mmopen/vi_32/icmBarsam1EodnibzlPDoG1d7QcALr7EicYWfGlST4gIYBPqYjH8oxQuLnlRgLaSVRs5YyugWKO6ujJ3haUA3jq8Q/132" }
         usr = _add_user(info)
@@ -79,8 +81,9 @@ def test_login(request):
 
 
 def debug(request):
-    ret = rq.get("http://psi.longmentcm.com/riwrng/getNum")
-    return JsonResponse(json.loads(ret.text))
+    if not settings.LOCAL_DEBUD:
+        return  render(request, 'login.html')
+    
 
 @login_required(login_url='/auth_error') 
 def performance(request):
@@ -99,9 +102,7 @@ def performance(request):
         context[f"{head}_ttl_score"] = scr(data.dev, data.num)
         return context
 
-
-    usr = user.objects.get(user=request.user)
-    scores = score.objects.get(user=usr)
+    scores = score.objects.get(user=request.user)
     context = {
         "trn_dev": scores.train_dev,
         "trn_std": std(scores.train_num),
@@ -110,17 +111,20 @@ def performance(request):
         "exp_dev": scores.exp_dev,
         "exp_std": std(scores.exp_num),
         "exp_rounds": scores.exp_rounds,
-        "exp_score": scr(scores.exp_dev, scores.exp_num) 
+        "exp_score": scr(scores.exp_dev, scores.exp_num),
+        "total_content": [{"name":"总体", "field":"total"}] #, {"name":"练习","field":"train"},   {"name": "试验","field":"exp"}]
         }
-    context = total_data(context, "train")
-    context = total_data(context, "exp")
-    context = total_data(context, "total")
+   # for fld in context["total_content"]:
+
+    for fld in ["", "_cmp", "_rsc"]:
+        context = total_data(context, "train" + fld)
+        context = total_data(context, "exp" + fld)
+        context = total_data(context, "total" + fld)
     return render(request, "performance.html", context)
 
 @login_required(login_url='/auth_error') 
 def detail(request):
-    usr = user.objects.get(user=request.user)
-    grp = group.objects.filter(user=usr, mod=request.GET["mod"]=='t')
+    grp = group.objects.filter(user=request.user, mod=request.GET["mod"]=='t')
     paginator = Paginator(grp, 10)
     page = request.GET.get('page')
     try:
@@ -135,4 +139,4 @@ def detail(request):
     return render(request, 'detail.html', context)
 
 def about(request):
-    return render(request, 'about.html')
+    return render(request, 'about.html', {"title":"意念干扰随机数发生器实验"})

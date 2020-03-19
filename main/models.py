@@ -1,14 +1,16 @@
 from django.db import models
 import django.utils.timezone as timezone
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
-class user(models.Model):
-    user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
-    openid  = models.CharField(unique=True, null=False, max_length=100)
+class userInfo(AbstractUser):
+    #user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
+    #openid  = models.CharField(unique=True, null=False, max_length=100)
+    nid = models.AutoField(primary_key=True)
     nickname = models.CharField(null=True, max_length=200)
-    sex = models.BooleanField(default=False) 
+    sex = models.SmallIntegerField(null=True, default=0)
     headimgurl = models.CharField(null=True, max_length=1000)
     grade = models.SmallIntegerField(null=True, default=0)
+    direction = models.BooleanField(default=True) 
 
 class total_result(models.Model):
     type = models.CharField(primary_key=True, max_length=100)
@@ -18,7 +20,7 @@ class total_result(models.Model):
     num = models.BigIntegerField(null=True, default=0)
 
 class score(models.Model):
-    user = models.OneToOneField(user, primary_key=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(userInfo, primary_key=True, on_delete=models.CASCADE)
     train_num = models.BigIntegerField(null=True, default=0)
     train_dev = models.BigIntegerField(null=True, default=0)
     train_rounds = models.IntegerField(null=True, default=0)
@@ -29,7 +31,7 @@ class score(models.Model):
 
 class group(models.Model):
     #创建组时确定的参数
-    user = models.ForeignKey(user, db_index=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(userInfo, db_index=True, on_delete=models.CASCADE)
     ip = models.CharField(null=False, max_length=100)    
     rnd_num = models.SmallIntegerField(null=True, default=0)
     mod = models.BooleanField(default=False) 
@@ -49,7 +51,7 @@ class experiment(models.Model):
     compare_score = models.SmallIntegerField(null=True, default=0)
     research_score = models.SmallIntegerField(null=True, default=0)
     create_timestamp = models.DateTimeField(auto_now_add=True)
-    
+    direction = models.BooleanField(null=True, default=True) 
 
 
 
