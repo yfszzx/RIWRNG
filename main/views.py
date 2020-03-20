@@ -36,8 +36,7 @@ def _auth_login(openid, request):
 @login_required(login_url='/auth_error')    
 def exp_main(request):
     if request.GET["mod"] == 'e':
-        usr = user.objects.get(user=request.user)
-        if usr.grade == 0:
+        if request.user.grade == 0:
             return render(request, 'forbid.html')
     return render(request, 'experiment.html')
 
