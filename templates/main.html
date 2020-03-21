@@ -26,8 +26,12 @@
         
         <br>
         <div>
-        <a href="/riwrng/about">实验说明</a>&nbsp;&nbsp;<a href="/riwrng/performance">查看成绩</a>
+        <a href="/riwrng/about">实验说明</a>&nbsp;&nbsp;<a href="/riwrng/performance">查看成绩</a>        
       </div>
+      {% if request.user.grade > 0 %}
+      <hr>
+      <a id='contact' href="#">联系主办方</a>
+      {% endif %}
     </div>
 
 </div>
@@ -42,6 +46,11 @@ $(document).ready(function(){
   $(".btn").click(function(){
     window.location.href='/riwrng?mod=' + $(this).attr('mod');
   });
+   {% if request.user.grade > 0 %}
+  $('#contact').click(function(){
+    alert("请致电15882062042 杨先生 联系领取奖金、参与进一步实验等事宜");
+  })
+  {% endif %}
 });
 </script>
 

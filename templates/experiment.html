@@ -50,9 +50,12 @@
 var groupid = 0;
 var mod = '{{request.GET.mod}}' == 'e' ? 0:1;
 var direction = '{{request.user.direction}}' == 'True' ? 1:0 ;
-var start_time = null
+var start_time = null;
+var show_flag = false;
+var grade = {{request.user.grade}};
+var rounds = 0;
 function renew_round(round){
-    mod_name = mod ? "测试":"练习";
+    mod_name = mod ? "练习":"实验";
     $("#rounds").html( mod_name + "第" + round + "轮");
 }
 function set_direct(new_direct){
@@ -97,6 +100,10 @@ function show_result(data){
   $("#encourage").html(encourage);
   $("#time").html(data.time);
   $("#all_time").html(new Date().getTime() - start_time);
+  if (grade == 0 && mod && !show_flag && rounds >= 10 && data.value >=3){
+    alert("恭喜您获得正式参与实验的资格，并且获得奖金100元，请致电15882062042 杨先生 联系领取奖金事宜");
+    show_flag = true
+  }
 }
 
 $(document).ready(function(){
@@ -120,9 +127,10 @@ $(document).ready(function(){
     });
     $(".prepair").find(".btn").click(function(){
           $.getJSON('/riwrng/get_compare', {groupid:groupid}, function(data){
-              renew_round(data.round + 1)
-              $(".start").show("slow")
-              $(".prepair").hide("slow")
+              renew_round(data.round + 1);
+              rounds = data.round + 1;
+              $(".start").show("slow");
+              $(".prepair").hide("slow");
               $(".start").find(".btn").attr("disabled",false);
             });
     });
