@@ -111,7 +111,7 @@ def set_compare(request):
         exp.save()
         grp.compared = True
         grp.save()
-        tp = "train" if exp.mod else "exp"
+        tp = "train" if exp.direction else "exp"
         _total_save(tp + "_cmp", 0, rnd, exp.direction)
         _total_save("total_cmp", 0, rnd, exp.direction)    
 
