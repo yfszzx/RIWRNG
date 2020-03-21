@@ -92,8 +92,8 @@ def get_result(request):
         grp.user.save()
 
     #测试模式授权
-    if mod == 0 and grp.user.grade == 0 and grp.rounds >= 10 and grp.value > 3:
-        grp.user.grade = 0
+    if mod == 1 and grp.user.grade == 0 and grp.rounds >= 10 and grp.value > 3:
+        grp.user.grade = 1
         grp.user.save()
 
     return JsonResponse({
