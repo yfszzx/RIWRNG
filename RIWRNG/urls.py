@@ -27,6 +27,7 @@ urlpatterns = [
     path('riwrng/performance', views.performance),
     path('riwrng/detail', views.detail),
     path('riwrng/about', views.about),
+     path('riwrng/project_performance', views.project_performance),
     path('test/login', views.test_login),
     path('test/debug', views.debug),
 ]

@@ -13,6 +13,13 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 APPID = settings.WX_APPID
 SECRET = settings.WX_SECRET
 
+def _scr(score, num):
+        if num == 0:
+            return 0
+        return round(score * 2/ ((num  * 1000) ** 0.5), 2)
+def _std(num):
+        return round((num * 1000) ** 0.5 / 2 ,2)
+
 def _add_user(info):      
     #usr = ser.objects.create_user(username=info["openid"], password='password')
     obj = userInfo.objects.create_user(
@@ -27,6 +34,22 @@ def _add_user(info):
         user=obj
     )
     return obj
+
+def _total_performance():
+    def total_data(head):
+        context = {}
+        data = total_result.objects.get(type=head)
+        context["rnd"] = data.rounds
+        context["mem"] = data.members
+        context["dev"] = data.dev
+        context["std"]  = _std(data.num)
+        context["score"] = _scr(data.dev, data.num)
+        return context
+    content = [{"name":"总体", "field":"total"}, {"name":"练习","field":"train"},   {"name": "试验","field":"exp"}]
+    for c in content:
+        for f in ["", "_cmp", "_rsc"]:
+            c["v" + f] =  total_data(c["field"]  + f)
+    return content
 
 def _auth_login(openid, request):
     usr = auth.authenticate(username=openid, password='password')
@@ -86,39 +109,21 @@ def debug(request):
 
 @login_required(login_url='/auth_error') 
 def performance(request):
-    def scr(score, num):
-        if num == 0:
-            return 0
-        return round(score * 2/ ((num  * 1000) ** 0.5), 2)
-    def std(num):
-        return round((num * 1000) ** 0.5 / 2 ,2)
-    def total_data(context, head):
-        data = total_result.objects.get(type=head)
-        context[f"{head}_ttl_rnd"] = data.rounds
-        context[f"{head}_ttl_mem"] = data.members
-        context[f"{head}_ttl_dev"] = data.dev
-        context[f"{head}_ttl_std"]  = std(data.num)
-        context[f"{head}_ttl_score"] = scr(data.dev, data.num)
-        return context
+    
 
     scores = score.objects.get(user=request.user)
     context = {
         "trn_dev": scores.train_dev,
-        "trn_std": std(scores.train_num),
+        "trn_std": _std(scores.train_num),
         "trn_rounds": scores.train_rounds,
-        "trn_score":  scr(scores.train_dev, scores.train_num),
+        "trn_score":  _scr(scores.train_dev, scores.train_num),
         "exp_dev": scores.exp_dev,
-        "exp_std": std(scores.exp_num),
+        "exp_std": _std(scores.exp_num),
         "exp_rounds": scores.exp_rounds,
-        "exp_score": scr(scores.exp_dev, scores.exp_num),
-        "total_content": [{"name":"总体", "field":"total"}] #, {"name":"练习","field":"train"},   {"name": "试验","field":"exp"}]
+        "exp_score": _scr(scores.exp_dev, scores.exp_num)       
         }
-   # for fld in context["total_content"]:
-
-    for fld in ["", "_cmp", "_rsc"]:
-        context = total_data(context, "train" + fld)
-        context = total_data(context, "exp" + fld)
-        context = total_data(context, "total" + fld)
+   
+    context["total"] = _total_performance()
     return render(request, "performance.html", context)
 
 @login_required(login_url='/auth_error') 
@@ -139,3 +144,6 @@ def detail(request):
 
 def about(request):
     return render(request, 'about.html', {"title":"意念干扰随机数发生器实验"})
+def project_performance(request):
+    context = {"total": _total_performance()}
+    return render(request, "project_performance.html", context)

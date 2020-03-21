@@ -1,0 +1,18 @@
+ {% for src in total%}
+<div class="panel panel-success  text-white">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            项目{{src.name}}成绩
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div><b>参与人数</b>:{{src.v.mem}}</b></div>
+        <div><b>实验次数</b>:{{src.v.rnd}}</b></div>
+        <div><b>累计偏差</b>:{{src.v.dev}}</b></div>
+        <div><b>标准差</b>:{{src.v.std}}</b></div>
+        <div><b>评分</b>:{{src.v.score}}</b></div> 
+        <div><b>参照R评分</b>:{{src.v_rsc.score}}</b></div>  
+        <div><b>参照C评分</b>:{{src.v_cmp.score}}</b></div>  
+    </div>
+</div>
+ {% endfor %}

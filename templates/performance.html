@@ -29,23 +29,6 @@
         <a href="/riwrng/detail?mod=e">查看详情</a>  
     </div>
 </div>
- {% for src in total_content%}
-<div class="panel panel-success  text-white">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            项目{{src.name}}成绩
-        </h3>
-    </div>
-    <div class="panel-body">
-        <div><b>参与人数</b>:{{total_ttl_mem}}</b></div>
-        <div><b>实验次数</b>:{{total_ttl_rnd}}</b></div>
-        <div><b>累计偏差</b>:{{total_ttl_dev}}</b></div>
-        <div><b>标准差</b>:{{total_ttl_std}}</b></div>
-        <div><b>评分</b>:{{total_ttl_score}}</b></div> 
-        <div><b>参照组1评分</b>:{{total_rsc_ttl_score}}</b></div>  
-        <div><b>参照组2评分</b>:{{total_cmp_ttl_score}}</b></div>  
-    </div>
-</div>
- {% endfor %}
+{% include "total_perform.html" %}
 
 {% endblock %}
