@@ -14,8 +14,9 @@ class Command(BaseCommand):
             score_max = 0
             score_min = 0
             num = 1
+            dev = 0
             for k in n:
-                dev = (k.exp_score -5000) * (1 if k.direction else -1) 
+                dev += (k.exp_score -5000) * (1 if k.direction else -1) 
                 s = dev * 2 / ((10000 * num) ** 0.5)
                 num += 1
                 if s > score_max:
@@ -34,10 +35,11 @@ class Command(BaseCommand):
             score = 0
             score_max = 0
             num = 1
+            dev = 0
             for d in g:
                 n = experiment.objects.filter(group_id=d.id).order_by('id').all()
                 for k in n:
-                    dev = (k.exp_score -5000) * (1 if k.direction else -1) 
+                    dev += (k.exp_score -5000) * (1 if k.direction else -1) 
                     s = dev * 2 / ((10000 * num) ** 0.5)
                     num += 1
                     if s > score_max:
