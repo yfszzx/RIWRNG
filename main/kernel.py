@@ -72,6 +72,9 @@ def get_result(request):
         scr.exp_dev += _get_dev(rnd, direct)
         scr.exp_num += RAND_NUMBER_NUM / 1000
         scr.exp_rounds += 1
+        val = scr.exp_dev * 2 / (scr.exp_num * 1000) ** 0.5
+        if val > scr.max_value:
+            scr.max_value = val
         tp = "exp"
     scr.save()
     _total_save(tp, member, rnd, direct)
@@ -85,6 +88,10 @@ def get_result(request):
     grp.dev +=  _get_dev(rnd, direct)
     grp.value = grp.dev * 2 / ((RAND_NUMBER_NUM * grp.rounds) ** 0.5)
     grp.compared = False
+    if grp.max_value < grp.value:
+        grp.max_value = grp.value
+    if grp.min_value > grp.value:
+        grp.min_value = grp.value
     grp.save()
     
     if direct != grp.user.direction:

@@ -28,6 +28,7 @@ class score(models.Model):
     exp_dev = models.BigIntegerField(null=True, default=0)
     exp_rounds = models.IntegerField(null=True, default=0)
     latest_exp_time =  models.DateTimeField(null=True, default=timezone.now) 
+    max_value = models.FloatField(null=True, default=0)
 
 class group(models.Model):
     #创建组时确定的参数
@@ -41,6 +42,8 @@ class group(models.Model):
     rounds = models.SmallIntegerField(null=True, default=0)  
     dev = models.IntegerField(null=True, default=0)  
     value = models.FloatField(null=True, default=0)
+    max_value = models.FloatField(null=True, default=0)
+    min_value = models.FloatField(null=True, default=0)
     last_edit_timestamp = models.DateTimeField(auto_now=True)
     curr_exp = models.BigIntegerField(null=True, default=0)
     compared = models.BooleanField(default=False, db_index=True) #用于标记是否已生成参照数
