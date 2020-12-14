@@ -29,6 +29,7 @@ class score(models.Model):
     exp_rounds = models.IntegerField(null=True, default=0)
     latest_exp_time =  models.DateTimeField(null=True, default=timezone.now) 
     max_value = models.FloatField(null=True, default=0)
+    max_rounds = models.IntegerField(null=True, default=0)
 
 class group(models.Model):
     #创建组时确定的参数

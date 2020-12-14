@@ -34,19 +34,22 @@ class Command(BaseCommand):
             g = group.objects.filter(user_id=u.nid, mod=0).order_by('id').all()
             score = 0
             score_max = 0
+            round_max = 0
             num = 1
             dev = 0
             for d in g:
                 n = experiment.objects.filter(group_id=d.id).order_by('id').all()
                 for k in n:
                     dev += (k.exp_score -5000) * (1 if k.direction else -1) 
-                    s = dev * 2 / ((10000 * num) ** 0.5)
-                    num += 1
+                    s = dev * 2 / ((10000 * num) ** 0.5)                    
                     if s > score_max:
                        score_max = s
-            print(score_max)
+                       round_max = num
+                    num += 1
+            print(score_max, round_max)
             s = scr.objects.get(user_id=u.nid)
             s.max_value = score_max
+            s.max_rounds = round_max
             s.save()
             print(s)
 
