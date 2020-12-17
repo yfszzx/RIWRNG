@@ -42,7 +42,7 @@
     </div>
   </div>
     <br><hr>
-  <h6>生成随机数用时:&nbsp;<span id="time">-</span>&nbsp;毫秒 &nbsp;&nbsp;响应时间&nbsp;<span id="all_time">-</span>&nbsp;毫秒</h6>
+  <h6>生成随机数时间:&nbsp;<span id="time">-</span>&nbsp;毫秒 &nbsp;&nbsp;响应时间&nbsp;<span id="all_time">-</span>&nbsp;毫秒</h6>
   <a style="font-size:20px" href="/riwrng/main">返回</a>
 </div>
 
@@ -100,8 +100,8 @@ function show_result(data){
   $("#encourage").html(encourage);
   $("#time").html(data.time);
   $("#all_time").html(new Date().getTime() - start_time);
-  if (grade == 0 && mod && !show_flag && rounds >= 10 && data.value >=3){
-    alert("恭喜您获得正式参与实验的资格，并且获得奖金100元，请致电15882062042 杨先生 联系领取奖金事宜");
+  if (grade == 0 && mod && !show_flag && rounds >= 20 && data.value >=3){
+    alert("恭喜您获得正式参与实验的资格，并且获得奖金50元，请加微信15882062042 杨昉 联系领取奖金事宜");
     show_flag = true
   }
 }
