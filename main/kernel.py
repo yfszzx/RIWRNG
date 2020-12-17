@@ -75,6 +75,7 @@ def get_result(request):
         val = scr.exp_dev * 2 / (scr.exp_num * 1000) ** 0.5
         if val > scr.max_value:
             scr.max_value = val
+            scr.max_rounds = scr.exp_rounds
         tp = "exp"
     scr.save()
     _total_save(tp, member, rnd, direct)
@@ -90,6 +91,7 @@ def get_result(request):
     grp.compared = False
     if grp.max_value < grp.value:
         grp.max_value = grp.value
+        grp.max_rounds = grp.rounds
     if grp.min_value > grp.value:
         grp.min_value = grp.value
     grp.save()

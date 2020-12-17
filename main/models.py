@@ -44,6 +44,7 @@ class group(models.Model):
     dev = models.IntegerField(null=True, default=0)  
     value = models.FloatField(null=True, default=0)
     max_value = models.FloatField(null=True, default=0)
+    max_rounds = models.IntegerField(null=True, default=0)
     min_value = models.FloatField(null=True, default=0)
     last_edit_timestamp = models.DateTimeField(auto_now=True)
     curr_exp = models.BigIntegerField(null=True, default=0)

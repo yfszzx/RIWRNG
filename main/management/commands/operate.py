@@ -13,18 +13,21 @@ class Command(BaseCommand):
             score = 0
             score_max = 0
             score_min = 0
+            max_rounds = 0
             num = 1
             dev = 0
             for k in n:
                 dev += (k.exp_score -5000) * (1 if k.direction else -1) 
-                s = dev * 2 / ((10000 * num) ** 0.5)
-                num += 1
+                s = dev * 2 / ((10000 * num) ** 0.5)                
                 if s > score_max:
                    score_max = s
+                   max_rounds = num
                 if s < score_min:
                     score_min = s
+                num += 1
             d.max_value = score_max
             d.min_value = score_min
+            d.max_rounds = max_rounds
             d.save()
             print(d)
 
