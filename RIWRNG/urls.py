@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from main import views, kernel
+from main import views, kernel,autotcm
 urlpatterns = [
    # path('admin/', admin.site.urls),
     path('login/', views.login),
@@ -27,7 +27,9 @@ urlpatterns = [
     path('riwrng/performance', views.performance),
     path('riwrng/detail', views.detail),
     path('riwrng/about', views.about),
-     path('riwrng/project_performance', views.project_performance),
+    path('riwrng/project_performance', views.project_performance),
     path('test/login', views.test_login),
     path('test/debug', views.debug),
+    path('riwrng/project_performance', views.project_performance),
+    path('autotcm/index', autotcm.index),
 ]
