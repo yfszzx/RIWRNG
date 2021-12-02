@@ -1,0 +1,39 @@
+{%extends "bare_base.html" %}
+ 
+{% block mainbody %}
+<style type="text/css">
+    .illustrate{font-size: 15px;color:#295c89;font-weight: bolder; text-align: center;margin: 10px}
+ </style>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    模态框（Modal）标题
+                </h4>
+            </div>
+            <div class="modal-body" id="main_symtoms">
+                在这里添加一些文本
+            </div>
+            <div class="modal-body" id="explain-txt">
+                “专业版”包含“脉象”“舌诊”等症状信息
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">关闭
+                </button>
+             </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>     
+<div class="navbar-header" style="background-color:#2e6da4;color:white;margin: 0;padding: 3px;width:100%" align="center">
+    <h4 style="magin:10px;margin-bottom:15px">智能化中医症状采集器(Demo)</h4>
+</div>
+<div align="center" > 
+   {% block tcm_mainbody %}
+       <p>original</p>
+    {% endblock %}     
+</div>
+{% endblock %}

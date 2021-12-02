@@ -1,0 +1,148 @@
+{%extends "auto_tcm_basic.html" %}
+ 
+{% block tcm_mainbody %}
+<style type="text/css">
+    .option{margin:10px;}
+    hr{margin:0px;}
+    .symptom-name{font-size:16px;font-weight: bolder}
+    .selections{margin:10px;font-size:13px;}
+    .prob{font-size:9px;color:#ad7e7e;margin-left: 5px}
+    .title{font-size:12px;margin:5px;padding: 3px}
+    .info{margin: 5px}
+    .name{margin:2px;padding:3px;}
+    .deny{color:green;}
+
+</style>
+<div style="font-size: 12px;margin: 10px">
+<button type='button' class='btn btn-default' id="diagnose-button">诊断参考</button>   
+<button type='button' class='btn btn-default' id="goback">返回首页</button>
+</div>
+<div class="illustrate" style="margin-top: 15px">请选择是否伴有如下伴随症状</div>
+<div id="selections">
+    <div class="option">
+        {% for id in num_array %}
+        <div class="symptom-frame" id="frame-{{ id }}">
+            <hr>
+             <div class="symptom-name"></div>
+             <div style="margin:10px;font-size:13px;">
+                            <label class="radio-inline">
+                                <input type="radio" name="sym{{ id }}" value=2 ><b> 是</b>
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="sym{{ id }}"  value=-1> <b>否</b>
+                            </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="sym{{ id }}"  value=0> <b>不确定</b>
+                            </label>
+             </div>
+        </div>
+        {% endfor %}
+   
+
+     <button type='button' class='btn btn-primary' id="submit">提交</button>
+     </div>
+</div>
+<div class="modal fade" id="diagnose" tabindex="-1" role="dialog" aria-labelledby="yModmalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" >
+                    当前诊断
+                </h4>
+            </div>
+            <div class="modal-body" id="diagnose-body" align="left">
+                <div>
+                    <button type="button" class="btn btn-primary title" >性别</button><span class="info">{{sex}}</span>
+                    <button type="button" class="btn btn-primary title" >年龄</button><span class="info">{{request.GET.age}}</span>
+                    <button type="button" class="btn btn-primary title" >主诉症状</button><button class='btn btn-default name'>{{main_sym_name}}</button>
+                </div>
+                <br><hr>
+                <button type="button" class="btn btn-primary title" >伴随症状</button><div id="selected-symptoms">无</div>
+                <br><hr>
+                <button type="button" class="btn btn-primary title" >参考证候</button><div id="ele"></div>
+                <br><hr>
+                <button type="button" class="btn btn-primary title" >参考病名</button><div id="dis"></div>
+            </div>
+             <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">关闭
+                </button>
+             </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>  
+<script type="text/javascript">
+    function renew_info(diagnose){
+        $("#dis").html("")
+        $("#ele").html("")
+        keysSorted = Object.keys(diagnose["dis"]).sort(function(a,b){return diagnose["dis"][b][1] - diagnose["dis"][a][1]});
+           //排序健名
+
+        for (k in keysSorted){
+            i = keysSorted[k];
+            $("#dis").append("<button class='btn btn-default name'>" + diagnose["dis"][i][0]+ "<span class='prob'>" + Math.round(diagnose["dis"][i][1]*10000)/100 + "</span></button>")
+        }
+        keysSorted = Object.keys(diagnose["ele"]).sort(function(a,b){return diagnose["ele"][b][1] - diagnose["ele"][a][1]});
+        for (k in keysSorted){
+            i = keysSorted[k];
+            $("#ele").append("<button class='btn btn-default name'>" + diagnose["ele"][i][0] + "<span class='prob'>" + Math.round(diagnose["ele"][i][1]*100)/100 + "</span></button>")
+        }
+        count = 0
+        for (i in diagnose["sym"]){
+            frame = $("#frame-" + count);
+            frame.find(".symptom-name").html(diagnose["sym"][i][0]);
+            frame.find("input").attr("sym", i)
+            count++
+        }    
+        $(":radio[value=0]").click()
+
+
+
+    }
+    function submit(){
+        if ($("#selected-symptoms").find(".sel-sym").length == 0){
+            $("#selected-symptoms").html("")
+        }
+        $(":checked").each(function(){
+            v = $(this).attr("value");
+            name = $(this).parents(".symptom-frame").find(".symptom-name").html();
+            symptom_list[$(this).attr("sym")] =v;            
+            if (v > 0){                
+                $("#selected-symptoms").append("<button class='sel-sym btn btn-default'>" + name + "</button>")
+
+            }
+            if (v < 0){
+                $("#selected-symptoms").append("<div class='sel-sym btn btn-default'>无&nbsp;<span class='deny'>" + name + "</span></button>")
+            }
+        })
+        data = {"sex":{{ request.GET.sex }}, "age":{{ request.GET.age }}, "common":{{ request.GET.common }} ,'symptoms':JSON.stringify(symptom_list)};
+        $.get("/autotcm/get_result", data, function(result){
+            renew_info(result)
+            $("button").attr("disabled", false)
+
+        }, "json")
+
+       
+        
+    }
+    diagnose =  JSON.parse('{{diagnose|safe}}');
+    var symptom_list = { {{main_sym}} :2}
+    $().ready(function(){
+        renew_info(diagnose)
+        $("#diagnose-button").click(function(){
+            $("#diagnose").modal("show");
+        })
+        $("#goback").click(function(){
+              window.location.href="/autotcm/index";
+        })
+        $("#submit").click(function(){
+            $('button').attr("disabled", true)
+            submit()
+        })
+              
+
+    })
+</script>
+{% endblock %}

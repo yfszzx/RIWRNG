@@ -1,0 +1,305 @@
+{%extends "auto_tcm_basic.html" %}
+ 
+{% block tcm_mainbody %}
+<style type="text/css">
+    .select-button{margin:5px;font-size:15px;}
+</style>
+    <div>&nbsp;</div>
+    <div style="max-width:500px;">
+        <form action="/autotcm/auto_ask" id="form" method="get">
+        <div style="width:300px;height:50px">         
+                <div style="margin:10px;font-size:15px;float:left">
+                    <label class="radio-inline">
+                        <input type="radio" name="sex" id="optionsRadios3" value=0 checked><b> 女</b>
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="sex" id="optionsRadios4"  value=1> <b>男</b>
+                    </label>
+                </div>
+            <div class="input-group" style="width:110px;margin-top:05px;float:right">       
+                      <span class="input-group-addon" id="basic-addon3"  style="font-size: 12px">年龄</span>
+                      <input  style="font-size: 12px" name="age"  class="form-control" type="number" min="1" max="120" aria-describedby="basic-addon3" value=20>
+            </div> 
+         
+        </div>
+
+        <div style="margin-top:10px;font-size:12px;width:300px">       
+                <label class="radio-inline">
+                        <input type="radio" name="common" id="optionsRadios3" value=1 checked><b> 普通版</b>
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="common" id="optionsRadios4"  value=0> <b>专业版</b>
+                </label>
+                <span>&nbsp;&nbsp;</span>
+                <span id="explain" class="glyphicon glyphicon-question-sign" style="color:#70abe7;font-size: 14px;"/>
+        </div> 
+            <hr style="margin: 5px" />
+        <input id="main-symptom" name="main-symptom" tpye="hidden" hidden>
+        <input id="main-symptom-name" name="main-symptom-name" tpye="hidden" hidden>
+        </form>
+    
+        <div class="illustrate">请选择主要不适症状的部位或类别</div>
+        <div id="show">
+            <img src="/static/body_part.png" usemap="#map">
+            <map id="map" name="map"></map>
+        </div>
+
+        <div  id="class"  style="margin-top:5px"></div>
+    </div>
+<script type="text/javascript">
+$().ready(function(){
+    $('.body_area').click(function(){
+        name = $(this).attr("title");
+        $("#main_symtoms").html("");
+        $("#myModalLabel").html(name);
+        $("#main_symtoms").show()
+        $("#explain-txt").hide()
+        $.get("/autotcm/get_main_symptom?name=" + name, function(result){
+            $("#main_symtoms").append('<div class="illustrate" >请选择不适症状</div>')
+
+            for (id in result) {
+                $("#main_symtoms").append("<button type='button' class='btn btn-default select-button' value="+ id +" >" + result[id] + "</button>");                
+            }
+            $("#myModal").modal("show");
+            $().ready(function(){
+                $(".select-button").click(function(){
+                    $("#main-symptom").attr('value', $(this).attr('value'));
+                    $("#main-symptom-name").attr('value', $(this).html());
+                    $("#form").submit();
+             });
+        });
+    })
+
+       
+        
+    });
+    $("#explain").click(function(){
+       $("#myModalLabel").html(""); 
+       $("#main_symtoms").hide();
+       $("#explain-txt").show();
+       $("#myModal").modal("show");
+    });
+    
+
+});
+class_array = ["呼吸·声音", "饮食·口味", "精神·睡眠", "寒热·汗出", "皮肤", "全身", "大便", "小便", "月经", "带下", "妊娠", "产后", "妇科杂病", '其他'];
+body_part_array = [{
+            shape: "circle",
+            coords: "267,192,13",
+            title: "肛"
+        }, {
+            shape: "circle",
+            coords: "91,224,14",
+            title: "脐"
+        }, {
+            shape: "circle",
+            coords: "122,159,14",
+            title: "乳"
+        }, {
+            shape: "rect",
+            coords: "74,158,116,198",
+            title: "胃膈"
+        }, {
+            shape: "circle",
+            coords: "64,160,14",
+            title: "乳"
+        }, {
+            shape: "rect",
+            coords: "224,85,238,104",
+            title: "腋"
+        }, {
+            shape: "rect",
+            coords: "295,86,310,101",
+            title: "腋"
+        }, {
+            shape: "circle",
+            coords: "40,143,14",
+            title: "腋"
+        }, {
+            shape: "circle",
+            coords: "145,147,16",
+            title: "腋"
+        }, {
+            shape: "circle",
+            coords: "266,24,21",
+            title: "头"
+        }, {
+            shape: "circle",
+            coords: "38,129,26",
+            title: "肩"
+        }, {
+            shape: "circle",
+            coords: "147,129,26",
+            title: "肩"
+        }, {
+            shape: "rect",
+            coords: "250,35,285,62",
+            title: "颈项"
+        }, {
+            shape: "rect",
+            coords: "232,61,302,125",
+            title: "背"
+        }, {
+            shape: "rect",
+            coords: "237,198,297,248",
+            title: "大腿"
+        }, {
+            shape: "rect",
+            coords: "242,248,293,267",
+            title: "膝"
+        }, {
+            shape: "rect",
+            coords: "239,327,290,353",
+            title: "踝·足掌"
+        }, {
+            shape: "rect",
+            coords: "231,198,237,199",
+            title: ""
+        }, {
+            shape: "rect",
+            coords: "240,125,295,164",
+            title: "腰臀"
+        }, {
+            shape: "rect",
+            coords: "232,164,303,205",
+            title: "腰臀"
+        }, {
+            shape: "rect",
+            coords: "210,82,233,180",
+            title: "手臂"
+        }, {
+            shape: "rect",
+            coords: "303,82,320,182",
+            title: "手臂"
+        }, {
+            shape: "rect",
+            coords: "4,137,36,298",
+            title: "手臂"
+        }, {
+            shape: "rect",
+            coords: "142,141,182,301",
+            title: "手臂"
+        }, {
+            shape: "rect",
+            coords: "215,180,238,213",
+            title: "腕·手掌"
+        }, {
+            shape: "rect",
+            coords: "299,179,319,216",
+            title: "腕·手掌"
+        }, {
+            shape: "rect",
+            coords: "2,296,38,357",
+            title: "腕·手掌"
+        }, {
+            shape: "rect",
+            coords: "144,300,180,355",
+            title: "腕·手掌"
+        }, {
+            shape: "poly",
+            coords: "63,40",
+            title: ""
+
+        }, {
+            shape: "rect",
+            coords: "64,24,117,40",
+            title: "额·眉"
+        }, {
+            shape: "poly",
+            coords: "87,38,80,61,93,66,97,61,93,38",
+            title: "鼻"
+        }, {
+            shape: "rect",
+            coords: "66,42,114,54",
+            title: "眼"
+        }, {
+            shape: "rect",
+            coords: "53,35,66,64",
+            title: "耳"
+        }, {
+            shape: "rect",
+            coords: "112,37,129,65",
+            title: "耳"
+        }, {
+            shape: "rect",
+            coords: "76,65,103,82",
+            title: "口·齿"
+        }, {
+            shape: "poly",
+            coords: "124,40,128,19,111,6,95,3,73,5,66,9,57,23,59,34,64,38,69,45,71,42,75,35,74,26,77,26,87,25,95,23,108,22,115,26,114,32,118,38,122,41",
+            title: "头发·头皮"
+        }, {
+            shape: "rect",
+            coords: "82,89,99,106",
+            title: "咽喉"
+        }, {
+            shape: "rect",
+            coords: "62,166,116,224",
+            title: "上腹"
+        }, {
+            shape: "rect",
+            coords: "66,222,117,282",
+            title: "小腹"
+        }, {
+            shape: "rect",
+            coords: "71,275,109,317",
+            title: "前阴"
+        }, {
+            shape: "rect",
+            coords: "83,66,87,67",
+            title: ""
+        }, {
+            shape: "rect",
+            coords: "63,35,116,89",
+            title: "面"
+        }, {
+            shape: "rect",
+            coords: "44,106,139,169",
+            title: "胸"
+        }, {
+            shape: "poly",
+            coords: "69,220,69,220,81,191,76,169,42,163,40,184,47,205,49,215,51,218",
+            title: "胁肋"
+        }, {
+            shape: "poly",
+            coords: "136,219,114,220,110,201,108,186,110,173,110,165,128,164,145,165,148,183,137,201",
+            title: "胁肋"
+        }, {
+            shape: "rect",
+            coords: "44,216,66,261",
+            title: ""
+
+        }, {
+            shape: "rect",
+            coords: "115,218,138,259",
+            title: ""
+        }, {
+            shape: "rect",
+            coords: "238,267,293,327",
+            title: "小腿"
+        }, {
+            shape: "rect",
+            coords: "59,88,120,106",
+            title: "颈项"
+        }, {
+            shape: "rect",
+            coords: "216,58,249,82",
+            title: "肩"
+        }, {
+            shape: "rect",
+            coords: "285,55,320,83",
+            title: "肩"
+        }];
+for (i in body_part_array){
+        d = body_part_array[i]
+        txt = "<area class='body_area' shape='" + d["shape"] +"' coords='" + d.coords +"' title='" + d.title +"' />"
+        $("#map").append(txt)
+    }
+for (i in class_array){
+        
+        txt = "<button type='button' class='btn btn-primary body_area select-button' title='" + class_array[i] +"' >" + class_array[i] + "</button>"
+        $("#class").append(txt)
+    }
+</script>
+
+{% endblock %}

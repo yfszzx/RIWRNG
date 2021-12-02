@@ -32,4 +32,7 @@ urlpatterns = [
     path('test/debug', views.debug),
     path('riwrng/project_performance', views.project_performance),
     path('autotcm/index', autotcm.index),
+    path('autotcm/get_main_symptom', autotcm.get_main_symptoms),
+    path('autotcm/auto_ask', autotcm.auto_ask),
+    path('autotcm/get_result', autotcm.get_result),
 ]
