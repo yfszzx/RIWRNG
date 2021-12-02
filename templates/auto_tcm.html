@@ -58,11 +58,11 @@ $().ready(function(){
             $("#main_symtoms").append('<div class="illustrate" >请选择不适症状</div>')
 
             for (id in result) {
-                $("#main_symtoms").append("<button type='button' class='btn btn-default select-button' value="+ id +" >" + result[id] + "</button>");                
+                $("#main_symtoms").append("<button type='button' class='btn btn-default select-button symptom-button' value="+ id +" >" + result[id] + "</button>");                
             }
             $("#myModal").modal("show");
             $().ready(function(){
-                $(".select-button").click(function(){
+                $(".symptom-button").click(function(){
                     $("#main-symptom").attr('value', $(this).attr('value'));
                     $("#main-symptom-name").attr('value', $(this).html());
                     $("#form").submit();
