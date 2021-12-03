@@ -94,36 +94,43 @@ def element_judge(input_dict, sex, age, professional, num):
     res = res.iloc[:num]
     return res, sym_predict, ipt
     
-def disease_judge(input_dict, sex, age, professional, num):
+def disease_judge(main_symptom, input_dict, sex, age, professional, num):
     ele = pd.read_pickle("database/disease.pkl")   
     ele.loc[945,"freq"] /= 4 # 中风
     ele.loc[830, "freq"] /= 4 #眩晕
     ele.loc[252, "freq"] /= 4 #肛瘘
 #     ele.loc[250, "freq"] *= 2 #感冒
     
-    ele_sym = pd.read_pickle("database/dis_sym.pkl") 
-    #ele_sym["freq"].loc[:] *= 0.9
+    ele_sym = pd.read_pickle("database/dis_sym.pkl")
+    prob_dis = ele_sym["ele"][ele_sym["sym"] == main_symptom].values
     sym_freq = pd.read_pickle("database/sym_freq_dis.pkl")   
+    gp = ele_sym.groupby("ele")
+    concat = []
+    for i , dt in gp:
+        if i in prob_dis:
+            dt["ele"] = i
+            concat.append(dt)
+    ele_sym = pd.concat(concat).reset_index(drop=True)
     res, sym_predict, ipt = kernal(input_dict, sex, age, professional, ele, ele_sym, sym_freq)
-    res = pd.concat([res, ele["freq"]], axis=1).sort_values("prob", ascending=False)
+    res = res.sort_values("prob", ascending=False)
     res = res.iloc[:num]
-    res["prob"] = res["prob"] * ele["freq"][res.index]    
+    res["prob"] = res["prob"] * ele["freq"][res.index]
     return res, sym_predict, ipt
 
-def get_judgement(symptoms, sex, age, profession, disease_num, element_num):
+def get_judgement(main_sym, symptoms, sex, age, profession, disease_num, element_num):
     def pd2dict(pd, field):
         ret = {}
         for i in pd.index:
             ret[i] = [pd["name"][i], pd[field][i]]
         return ret
     ele_res, ele_sym_predict, ipt =  element_judge(symptoms, sex, age, profession, element_num)
-    dis_res, dis_sym_predict, ipt =  disease_judge(symptoms, sex, age, profession, disease_num)
-    dis_sym_predict = dis_sym_predict.iloc[:2] 
-    ele_sym_predict = ele_sym_predict.iloc[:5]
+    dis_res, dis_sym_predict, ipt =  disease_judge(main_sym, symptoms, sex, age, profession, disease_num)
+    dis_sym_predict = dis_sym_predict.iloc[:1] 
+    ele_sym_predict = ele_sym_predict.iloc[:4]
    
     ele_idx = np.setdiff1d(ele_sym_predict.index, dis_sym_predict.index)
     ele_sym_predict = ele_sym_predict.loc[ele_idx].sort_values("pred", ascending=False)
-    sym_ret = pd.concat([dis_sym_predict, ele_sym_predict.iloc[:3]])
+    sym_ret = pd.concat([dis_sym_predict, ele_sym_predict.iloc[:3- dis_sym_predict.index.size]])
     return pd2dict(ele_res, "prob"), pd2dict(dis_res, "prob"), pd2dict(sym_ret, "pred") ,ipt
 
 def get_main_symptoms(request):
@@ -136,9 +143,9 @@ def get_main_symptoms(request):
     idx = np.intersect1d(common_sym.index, sym["sym"].values)    
     ret = common_sym.loc[idx].sort_values("freq", ascending=False)["name"]
 
-    jsn = {}
+    jsn = []
     for i in ret.index:
-        jsn[i] = ret[i]
+        jsn.append([i, ret[i]])
     return HttpResponse(json.dumps(jsn, ensure_ascii=False),content_type='application/json')
 
 def index(request):
@@ -150,11 +157,12 @@ def get_result(request):
     age = int(request.GET['age'])
     profession = 1 - int(request.GET['common'])    
     sym = json.loads(request.GET['symptoms'])
+    main_sym = int(request.GET['main-symptom']) 
     symptoms = {}
     for s in sym:
         symptoms[int(s)] = int(sym[s])
     ret = {}
-    ret["ele"], ret["dis"], ret["sym"], _ = get_judgement(symptoms, sex, age, profession, 12, 6)
+    ret["ele"], ret["dis"], ret["sym"], _ = get_judgement(main_sym, symptoms, sex, age, profession, 15, 8)
     return HttpResponse(json.dumps(ret, ensure_ascii=False),content_type='application/json')
 
 
@@ -163,13 +171,14 @@ def auto_ask(request):
     age = int(request.GET['age'])
     profession = 1 - int(request.GET['common'])
     symptom = {int(request.GET['main-symptom']):2}
+    main_sym = int(request.GET['main-symptom'])
     context = {}
     context["sex"] = "女" if sex == 0 else "男"
     context["title"] = "智能化中医症状采集器" 
     context["main_sym_name"] = request.GET['main-symptom-name']
     context["main_sym"] = request.GET['main-symptom']
     res = {}   
-    res["ele"], res["dis"], res["sym"], _ = get_judgement(symptom, sex, age, profession, 12, 6)
+    res["ele"], res["dis"], res["sym"], _ = get_judgement(main_sym, symptom, sex, age, profession, 15, 8)
     context["diagnose"] = json.dumps(res, ensure_ascii=False)
     context["num_array"] = list(range(len(res["sym"])))
 

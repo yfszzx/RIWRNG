@@ -13,9 +13,10 @@
     .deny{color:green;}
 
 </style>
+<br>
 <div style="font-size: 12px;margin: 10px">
-<button type='button' class='btn btn-default' id="diagnose-button">诊断参考</button>   
-<button type='button' class='btn btn-default' id="goback">返回首页</button>
+    <button type='button' class='btn btn-default' id="diagnose-button">诊断参考</button>   
+    <button type='button' class='btn btn-default' id="goback">返回首页</button>
 </div>
 <div class="illustrate" style="margin-top: 15px">请选择是否伴有如下伴随症状</div>
 <div id="selections">
@@ -114,10 +115,12 @@
 
             }
             if (v < 0){
-                $("#selected-symptoms").append("<div class='sel-sym btn btn-default'>无&nbsp;<span class='deny'>" + name + "</span></button>")
+                $("#selected-symptoms").append("<div class='sel-sym btn btn-default'><span style='font-size:8px'>无</span>&nbsp;<s class='deny'>" + name + "</s></button>")
             }
         })
-        data = {"sex":{{ request.GET.sex }}, "age":{{ request.GET.age }}, "common":{{ request.GET.common }} ,'symptoms':JSON.stringify(symptom_list)};
+        data = {"sex":{{ request.GET.sex }}, "age":{{ request.GET.age }}, "common":{{ request.GET.common }} ,'main-symptom':{{ main_sym }},
+
+        'symptoms':JSON.stringify(symptom_list)};
         $.get("/autotcm/get_result", data, function(result){
             renew_info(result)
             $("button").attr("disabled", false)

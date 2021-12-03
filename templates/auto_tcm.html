@@ -10,15 +10,15 @@
         <div style="width:300px;height:50px">         
                 <div style="margin:10px;font-size:15px;float:left">
                     <label class="radio-inline">
-                        <input type="radio" name="sex" id="optionsRadios3" value=0 checked><b> 女</b>
+                        <input type="radio" name="sex" id="female" value=0 checked><b>女</b>
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="sex" id="optionsRadios4"  value=1> <b>男</b>
+                        <input type="radio" name="sex"  value=1> <b>男</b>
                     </label>
                 </div>
             <div class="input-group" style="width:110px;margin-top:05px;float:right">       
-                      <span class="input-group-addon" id="basic-addon3"  style="font-size: 12px">年龄</span>
-                      <input  style="font-size: 12px" name="age"  class="form-control" type="number" min="1" max="120" aria-describedby="basic-addon3" value=20>
+                      <span class="input-group-addon" id="basic-addon3"  style="font-size: 14px">年龄</span>
+                      <input  style="font-size: 14px" name="age"  class="form-control" type="number" min="1" max="120" aria-describedby="basic-addon3" value=20>
             </div> 
          
         </div>
@@ -57,8 +57,8 @@ $().ready(function(){
         $.get("/autotcm/get_main_symptom?name=" + name, function(result){
             $("#main_symtoms").append('<div class="illustrate" >请选择不适症状</div>')
 
-            for (id in result) {
-                $("#main_symtoms").append("<button type='button' class='btn btn-default select-button symptom-button' value="+ id +" >" + result[id] + "</button>");                
+            for (i in result) {
+                $("#main_symtoms").append("<button type='button' class='btn btn-default select-button symptom-button' value="+ result[i][0] +" >" + result[i][1] + "</button>");                
             }
             $("#myModal").modal("show");
             $().ready(function(){
@@ -70,6 +70,7 @@ $().ready(function(){
         });
     })
 
+    
        
         
     });
@@ -79,10 +80,18 @@ $().ready(function(){
        $("#explain-txt").show();
        $("#myModal").modal("show");
     });
-    
+    $('input[type=radio][name=sex]').change(function(){
+        if (this.value==0) {
+            $(".female-class").show()
+        }else{
+           $(".female-class").hide() 
+        }
+
+    })
+
 
 });
-class_array = ["呼吸·声音", "饮食·口味", "精神·睡眠", "寒热·汗出", "皮肤", "全身", "大便", "小便", "月经", "带下", "妊娠", "产后", "妇科杂病", '其他'];
+class_array = ["呼吸·声音", "饮食·口味", "精神·睡眠", "寒热·汗出", "皮肤", "全身", "大便", "小便", "月经", "带下", "妊娠", "产后", "妇科杂病"];
 body_part_array = [{
             shape: "circle",
             coords: "267,192,13",
@@ -296,8 +305,11 @@ for (i in body_part_array){
         $("#map").append(txt)
     }
 for (i in class_array){
-        
-        txt = "<button type='button' class='btn btn-primary body_area select-button' title='" + class_array[i] +"' >" + class_array[i] + "</button>"
+        cls = "";
+        if (["月经", "带下", "妊娠", "产后", "妇科杂病"].indexOf(class_array[i]) > -1) {
+            cls = "female-class"
+        }
+        txt = "<button type='button' class='btn btn-primary body_area select-button " + cls +"' title='" + class_array[i] +"' >" + class_array[i] + "</button>"
         $("#class").append(txt)
     }
 </script>
