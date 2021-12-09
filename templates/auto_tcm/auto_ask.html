@@ -1,4 +1,4 @@
-{%extends "auto_tcm_basic.html" %}
+{%extends "auto_tcm/auto_tcm_basic.html" %}
  
 {% block tcm_mainbody %}
 <style type="text/css">
@@ -11,6 +11,7 @@
     .info{margin: 5px}
     .name{margin:2px;padding:3px;}
     .deny{color:green;}
+    .remove-added-sym{color:#AAA;}
 
 </style>
 <br>
@@ -39,8 +40,8 @@
         </div>
         {% endfor %}
    
-
-     <button type='button' class='btn btn-primary' id="submit">提交</button>
+     <div id="added-syms" style="padding: 10px;width:300px" align="left"></div>
+     <button type='button' class='btn btn-primary' id="add_sym">添加症状</button> <button type='button' class='btn btn-primary' id="submit">提交</button>
      </div>
 </div>
 <div class="modal fade" id="diagnose" tabindex="-1" role="dialog" aria-labelledby="yModmalLabel" aria-hidden="true">
@@ -67,6 +68,22 @@
                 <br><hr>
                 <button type="button" class="btn btn-primary title" >参考病名</button><div id="dis"></div>
             </div>
+             <div class="modal-footer" align="center">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">继续采集症状
+                </button>
+             </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>  
+<div class="modal fade" id="selector" tabindex="-1" role="dialog" aria-labelledby="yModmalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                
+            </div>
+            <div class="modal-body" id="selector" >
+                {% include 'auto_tcm/sym_selector.html' %}
+            </div>
              <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">关闭
                 </button>
@@ -75,6 +92,18 @@
     </div><!-- /.modal -->
 </div>  
 <script type="text/javascript">
+    function symptom_selected(){         
+         $("#added-syms").append("<button class='added-sym btn btn-default' name='"+ $(this).html() +"'' value='" + $(this).attr("value") +"'>" + $(this).html() + "&nbsp;&nbsp;<span class='glyphicon glyphicon-remove-sign remove-added-sym'></span></button>")
+         $("#myModal").modal("hide");
+         $().ready(function(){
+            $(".remove-added-sym").click(function(event){
+                    event.stopPropagation();
+                    $(this).parents('.sel-sym').remove()
+             
+            })
+         })
+
+        }
     function renew_info(diagnose){
         $("#dis").html("")
         $("#ele").html("")
@@ -109,7 +138,7 @@
         $(":checked").each(function(){
             v = $(this).attr("value");
             name = $(this).parents(".symptom-frame").find(".symptom-name").html();
-            symptom_list[$(this).attr("sym")] =v;            
+            symptom_list[$(this).attr("sym")] = v;            
             if (v > 0){                
                 $("#selected-symptoms").append("<button class='sel-sym btn btn-default'>" + name + "</button>")
 
@@ -118,12 +147,18 @@
                 $("#selected-symptoms").append("<div class='sel-sym btn btn-default'><span style='font-size:8px'>无</span>&nbsp;<s class='deny'>" + name + "</s></button>")
             }
         })
+        $(".added-sym").each(function(){
+                symptom_list[$(this).attr('value')] = 2 ;
+                $("#selected-symptoms").append("<button class='sel-sym btn btn-default'>" + $(this).attr('name') + "</button>")
+            })
         data = {"sex":{{ request.GET.sex }}, "age":{{ request.GET.age }}, "common":{{ request.GET.common }} ,'main-symptom':{{ main_sym }},
 
         'symptoms':JSON.stringify(symptom_list)};
         $.get("/autotcm/get_result", data, function(result){
+            $("#added-syms").html("")
             renew_info(result)
             $("button").attr("disabled", false)
+             $("#diagnose").modal("show");
 
         }, "json")
 
@@ -144,8 +179,12 @@
             $('button').attr("disabled", true)
             submit()
         })
-              
-
-    })
+        $("#add_sym").click(function(){
+            $("#selector").modal("show");
+        })
+        $('.body_area').click(function(){
+            $("#selector").modal("hide");
+        })
+   })
 </script>
 {% endblock %}

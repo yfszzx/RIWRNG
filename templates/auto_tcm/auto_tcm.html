@@ -1,0 +1,69 @@
+{%extends "auto_tcm/auto_tcm_basic.html" %}
+ 
+{% block tcm_mainbody %}
+<style type="text/css">
+    .select-button{margin:5px;font-size:15px;}
+</style>
+    <div>&nbsp;</div>
+    <div style="max-width:500px;">
+        <form action="/autotcm/auto_ask" id="form" method="get">
+        <div style="width:300px;height:50px">         
+                <div style="margin:10px;font-size:15px;float:left">
+                    <label class="radio-inline">
+                        <input type="radio" name="sex" id="female" value=0 checked><b>女</b>
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="sex"  value=1> <b>男</b>
+                    </label>
+                </div>
+            <div class="input-group" style="width:110px;margin-top:05px;float:right">       
+                      <span class="input-group-addon" id="basic-addon3"  style="font-size: 14px">年龄</span>
+                      <input  style="font-size: 14px" name="age"  class="form-control" type="number" min="1" max="120" aria-describedby="basic-addon3" value=20>
+            </div> 
+         
+        </div>
+
+        <div style="margin-top:10px;font-size:12px;width:300px">       
+                <label class="radio-inline">
+                        <input type="radio" name="common" id="optionsRadios3" value=1 checked><b> 普通版</b>
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="common" id="optionsRadios4"  value=0> <b>专业版</b>
+                </label>
+                <span>&nbsp;&nbsp;</span>
+                <span id="explain" class="glyphicon glyphicon-question-sign" style="color:#70abe7;font-size: 14px;"/>
+        </div> 
+            <hr style="margin: 5px" />
+        <input id="main-symptom" name="main-symptom" tpye="hidden" hidden>
+        <input id="main-symptom-name" name="main-symptom-name" tpye="hidden" hidden>
+        </form>
+    
+       {% include 'auto_tcm/sym_selector.html' %}
+    </div>
+<script type="text/javascript">
+function symptom_selected(){
+            $("#main-symptom").attr('value', $(this).attr('value'));
+            $("#main-symptom-name").attr('value', $(this).html());
+            $("#form").submit();
+        }
+$().ready(function(){
+    $("#explain").click(function(){
+       $("#myModalLabel").html(""); 
+       $("#main_symtoms").hide();
+       $("#explain-txt").show();
+       $("#myModal").modal("show");
+    });
+    $('input[type=radio][name=sex]').change(function(){
+        if (this.value==0) {
+            $(".female-class").show()
+        }else{
+           $(".female-class").hide() 
+        }
+
+    })
+
+
+});
+</script>
+
+{% endblock %}

@@ -150,7 +150,7 @@ def get_main_symptoms(request):
 
 def index(request):
     context = {"title":"智能化中医症状采集器"}
-    return  render(request, 'auto_tcm.html', context)
+    return  render(request, 'auto_tcm/auto_tcm.html', context)
 
 def get_result(request):
     sex = int(request.GET['sex'])
@@ -182,4 +182,4 @@ def auto_ask(request):
     context["diagnose"] = json.dumps(res, ensure_ascii=False)
     context["num_array"] = list(range(len(res["sym"])))
 
-    return  render(request, 'auto_ask.html', context)
+    return  render(request, 'auto_tcm/auto_ask.html', context)
